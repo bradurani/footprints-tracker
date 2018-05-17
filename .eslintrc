@@ -1,0 +1,21 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 3,
+    "sourceType": "script"
+  },
+  "env": {
+    "browser": true,
+    "node": false
+  },
+  "globals": {
+    "document": true,
+    "window": true,
+    "navigator": true
+  },
+  "rules": {
+    "comma-dangle": "error",
+    "no-extend-native": "error",
+    "semi": "error",
+    "no-undef": "error"
+  }
+}

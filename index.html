@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Real News</title>
+    <script>
+(function(w,d,s,u){
+  var fp = w['Footprints']=w['Footprints']||{};
+  fp.pageTime=1*new Date();
+  fp.argv = arguments;
+  fp.push = function(){
+    (fp.q = fp.q||[]).push(Array.prototype.slice.call(arguments))
+  };
+  var e=d.createElement('script');
+  e.async=1;
+  e.src=s;
+  var t=d.getElementsByTagName('script')[0];
+  t.parentNode.insertBefore(e,t);
+})(window,document,'bundle.js', 'http://localhost:8000/vapid/analytic_events/', 1000);
+
+Footprints.push('debug', true);
+Footprints.push('user', 'Brad Urani', 'bradurani@gmail.com');
+Footprints.push('pageView');
+
+    </script>
+  </head>
+  <body>
+    <h1>Real News</h1>
+    <p>
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    </p>
+  </body>
+</html>
