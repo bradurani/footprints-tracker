@@ -1,13 +1,20 @@
 import { ulid } from 'ulid';
 
+/* change args to options hash */
+/* ulid for page load */
+/* callbacks */
+
+var LIB_NAME = 'Footprints';
+
 (function(fp) {
-  (function(window, document, scriptUrl, endpointUrl, intervalWait, pageTime) {
+  (function(queue, window, document, scriptUrl, endpointUrl, intervalWait, pageTime) {
+
     var processQueue = function(q) {
+      trace("processing queue");
       (function(browserData) {
-        var q = app['q'] || [];
         var cmd;
         var actionName;
-        while (cmd = q.shift()) {
+        while (cmd = queue.shift()) {
           actionName = cmd.shift();
           processAction(actionName, cmd, browserData);
         }
@@ -65,7 +72,7 @@ import { ulid } from 'ulid';
     var trace = function() {
       if (debug) {
         var args = toArray(arguments);
-        args.unshift('Footprints:  ');
+        args.unshift(LIB_NAME + ': ');
         console.log.apply(this, args);
       }
     };
@@ -73,7 +80,7 @@ import { ulid } from 'ulid';
     var error = function() {
       if (debug) {
         var args = toArray(arguments);
-        args.unshift('FOOTRPRINTS');
+        args.unshift(LIB_NAME + ': ');
         console.error.apply(this, args);
       }
     };
@@ -117,4 +124,4 @@ import { ulid } from 'ulid';
     fp.argv[3] || (function(){ throw 'you must pass an endpoint url to argv[3]'; })(),
     fp.argv[4] || 1000,
     fp.pageTime || 1*new Date());
-})(window['Footprints'] = window['Footprints'] || {});
+})(window[LIB_NAME] = window[LIB_NAME] || {});

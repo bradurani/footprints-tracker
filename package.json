@@ -8,7 +8,7 @@
   ],
   "author": "Brad Urani",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack --devtool source-map"
   },
   "dependencies": {
     "ulid": "^2.3.0"
