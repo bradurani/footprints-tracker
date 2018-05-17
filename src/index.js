@@ -7,8 +7,17 @@ import { ulid } from 'ulid';
 var LIB_NAME = 'Footprints';
 
 (function(fp) {
-  var moo = '';
+
   (function(queue, window, document, scriptUrl, endpointUrl, intervalWait, pageTime, basePayload) {
+
+    /**
+     * replace the push method from the snippet with one
+     * that calls processQueue so we don't have to wait for the timer
+     */
+    fp.push = function(){
+      queue.push(Array.prototype.slice.call(arguments));
+      processQueue(queue);
+    };
 
     var processQueue = function(q) {
       trace("processing queue");
