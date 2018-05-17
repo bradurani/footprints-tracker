@@ -8,38 +8,42 @@ var LIB_NAME = 'Footprints';
 
 (function(fp) {
 
-  (function(queue, window, document, scriptUrl, endpointUrl, intervalWait, pageTime, basePayload) {
+  (function(inputQueue, window, document, scriptUrl, endpointUrl, intervalWait, pageTime) {
+
+    var basePayload = {};
+    var outputQueue = [];
 
     /**
      * replace the push method from the snippet with one
      * that calls processQueue so we don't have to wait for the timer
      */
     fp.push = function(){
-      queue.push(Array.prototype.slice.call(arguments));
-      processQueue(queue);
+      inputQueue.push(Array.prototype.slice.call(arguments));
+      processQueues();
     };
 
-    var processQueue = function(q) {
-      trace("processing queue");
+    var processQueues = function(){
+      processInputQueue();
+      processOutputQueue();
+    }
+
+    var processInputQueue = function() {
+      trace("processing input queue");
       var cmd;
       var actionName;
-      while (cmd = queue.shift()) {
+      while (cmd = inputQueue.shift()) {
         actionName = cmd.shift();
         processAction(actionName, cmd);
       }
     };
 
     var processAction = function(actionName, args) {
-      try {
-        trace('processing', actionName, args);
-        var f = actions[actionName];
-        if (typeof f === "function") {
-          f.apply(null, args);
-        } else {
-          error("Unknown function", actionName);
-        }
-      } catch (err) {
-        error(err);
+      trace('processing action ', actionName, args);
+      var f = actions[actionName];
+      if (typeof f === "function") {
+        f.apply(null, args);
+      } else {
+        error("Unknown function", actionName);
       }
     };
 
@@ -65,14 +69,40 @@ var LIB_NAME = 'Footprints';
       payload['eventTime'] = now();
       payload['eventId'] = ulid();
       payload['eventName'] = eventName;
-      send(payload);
+      enqueueOutput(payload);
     };
 
-    var send = function(payload) {
+    var enqueueOutput = function(payload) {
+      outputQueue.push(payload);
+    }
+
+    var processOutputQueue = function() {
+      trace("processing output queue");
+      var payload;
+      var endingOutputQueue = [];
+      try {
+        while (payload = outputQueue.shift()) {
+          send(payload, function(){
+            endingOutputQueue.push(payload)
+          });
+        }
+      } finally {
+        outputQueue = endingOutputQueue;
+      }
+    };
+
+    var send = function(payload, errCallback) {
+      trace("sending event", payload)
       var oReq = new XMLHttpRequest();
       oReq.addEventListener("load", sendComplete.bind(null, payload));
-      oReq.addEventListener("error", sendError.bind(null, payload));
-      oReq.addEventListener("abort", sendError.bind(null, payload));
+      oReq.addEventListener("error", function(){
+        errCallback();
+        sendError.bind(null, payload);
+      });
+      oReq.addEventListener("abort", function(){
+        errCallback()
+        sendError.bind(null, payload);
+      });
       oReq.open("POST", endpointUrl);
       oReq.send();
     };
@@ -80,7 +110,7 @@ var LIB_NAME = 'Footprints';
     var trace = function() {
       if (debug) {
         var args = toArray(arguments);
-        args.unshift(LIB_NAME + ': ');
+        args.unshift(LIB_NAME + ':');
         console.log.apply(this, args);
       }
     };
@@ -88,7 +118,7 @@ var LIB_NAME = 'Footprints';
     var error = function() {
       if (debug) {
         var args = toArray(arguments);
-        args.unshift(LIB_NAME + ': ');
+        args.unshift(LIB_NAME + ':');
         console.error.apply(this, args);
       }
     };
@@ -118,15 +148,15 @@ var LIB_NAME = 'Footprints';
     var debug = false;
 
     window.setInterval(function() {
-      processQueue();
+      processQueues();
     }, intervalWait);
+
   })(fp.q || [],
     fp.argv[0] || (function(){ throw 'you must pass window to argv[0]'; })(),
     fp.argv[1] || (function(){ throw 'you must pass document to argv[1]'; })(),
     fp.argv[2] || (function(){ throw 'you must pass a script url to argv[2]'; })(),
     fp.argv[3] || (function(){ throw 'you must pass an endpoint url to argv[3]'; })(),
     fp.argv[4] || 1000,
-    fp.pageTime || 1*new Date(),
-    {}
+    fp.pageTime || 1*new Date()
   );
 })(window[LIB_NAME] = window[LIB_NAME] || {});
