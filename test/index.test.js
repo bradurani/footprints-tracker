@@ -2,6 +2,7 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import { init } from "../src/index.js"
 import MockDate from "MockDate";
+import sinon from "sinon";
 
 describe("Footprints", function(){
   var window;
@@ -12,6 +13,7 @@ describe("Footprints", function(){
   });
   beforeEach(function(){
     window = global.window;
+    window.setInterval = sinon.fake();
     document = global.document;
     window.Footprints = {};
     MockDate.set('2014-02-28T00:00:00.000Z');
@@ -97,8 +99,10 @@ describe("Footprints", function(){
       expect(window.Footprints.options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 1000,
-        pageTime: new Date('2014-02-28')
+        pageTime: new Date('2014-02-28'),
+        debug: false
       });
+      expect(window.setInterval.calledOnce);
     });
 
     it('allows overriding intervalWait and pageTime', function(){
@@ -108,7 +112,8 @@ describe("Footprints", function(){
       expect(window.Footprints.options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 2000,
-        pageTime: new Date(2018, 3, 6)
+        pageTime: new Date(2018, 3, 6),
+        debug: false
       });
       expect(window.Footprints.state.basePayload.pageTime).to.eql(new Date(2018, 3, 6));
     });
@@ -117,6 +122,13 @@ describe("Footprints", function(){
       window.Footprints.q = [['pageView']]
       init(window.Footprints);
       expect(window.Footprints.state.inputQueue).to.eql([['pageView']]);
+    });
+
+    it('overwrites footprints.push with a new versions', function(){
+      var f = window.Footprints.push = function(){};
+      init(window.Footprints);
+      expect(window.Footprints.push).to.be.a('function');
+      expect(window.Footprints.push).not.to.equal(f);
     });
 
   });
