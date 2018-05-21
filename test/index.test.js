@@ -67,7 +67,39 @@ describe("Footprints", function(){
         }).to.throw('FOOTPRINTS: you must pass the option endpointUrl');
       });
 
+
     });
+  });
+
+  describe('with valid configuration', function(){
+    beforeEach(function(){
+      window.Footprints = {
+        argv: [window, document, 'http://my.domain/script.js', {
+          endpointUrl: 'http://my.domain/analytics'
+        }]
+      };
+    });
+
+    it('initializes with empty state', function(){
+      init(window.Footprints);
+      expect(window.Footprints.state).to.eql({
+        basePayload: {},
+        inputQueue: [],
+        outputQueue: []
+      })
+      expect(window.Footprints.options.endpointUrl).to.eql('http://my.domain/analytics');
+      expect(window.Footprints.options.intervalWait).to.eql(1000);
+      expect(window.Footprints.options.pageTime).to.be.an('date');
+    });
+
+    it('allows overriding intervalWait and pageTime', function(){
+      window.Footprints.argv[3].intervalWait = 2000
+      window.Footprints.argv[3].pageTime = new Date(2014, 2, 28);
+      init(window.Footprints);
+      expect(window.Footprints.options.intervalWait).to.eql(2000);
+      expect(window.Footprints.options.pageTime).to.eql(new Date(2014, 2, 28));
+    });
+
   });
 });
 

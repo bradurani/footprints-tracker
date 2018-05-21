@@ -6,30 +6,35 @@ import { ulid } from 'ulid';
 /* lint for semicolons */
 
 var LIB_NAME = 'Footprints';
+var DEFAULT_INTERVAL_WAIT = 1000;
 
 export function init(footprints){
 
-  (function performSetup(){
+  footprints.state = {
+    basePayload: {},
+    inputQueue: [],
+    outputQueue: []
+  };
+  console.log(footprints);
 
-    footprints.state = {
-      basePayload: {},
-      inputQueue: [],
-      outputQueue: []
-    };
+  (function performSetup(){
 
     if (typeof footprints.argv == 'undefined'){
       throw LIB_NAME.toUpperCase() + ": your snippet must set " + LIB_NAME + ".argv";
     }
     ['window', 'document', 'scriptUrl', 'options'].forEach(function(name, index){
-      console.log(footprints.argv);
       if(typeof footprints.argv[index] == 'undefined'){
-         throw LIB_NAME.toUpperCase() + ": you must pass " + name + " in argv[" + index + "]";
+        throw LIB_NAME.toUpperCase() + ": you must pass " + name + " in argv[" + index + "]";
       }
     });
-    if(typeof footprints.argv.endpointUrl == 'undefined'){
+    footprints.options = footprints.argv[3];
+    if(typeof footprints.options.endpointUrl == 'undefined'){
       throw LIB_NAME.toUpperCase() + ": you must pass the option endpointUrl";
     }
+    footprints.options.intervalWait = footprints.options.intervalWait || DEFAULT_INTERVAL_WAIT
+    footprints.options.pageTime = footprints.options.pageTime || new Date();
   })();
+
 
   // (function(inputQueue, window, document, scriptUrl, endpointUrl, intervalWait, pageTime) {
   //
@@ -130,8 +135,8 @@ export function init(footprints){
   //   var trace = function() {
   //     if (debug) {
   //       var args = toArray(arguments);
-  //       args.unshift(LIB_NAME + ':');
-  //       console.log.apply(this, args);
+    //       args.unshift(LIB_NAME + ':');
+    //       console.log.apply(this, args);
   //     }
   //   };
   //
@@ -139,12 +144,12 @@ export function init(footprints){
   //     if (debug) {
   //       var args = toArray(arguments);
   //       args.unshift(LIB_NAME + ':');
-  //       console.error.apply(this, args);
+    //       console.error.apply(this, args);
   //     }
   //   };
   //
   //   var sendError = function(payload, e) {
-  //     error('Event Failed', e, payload);
+    //     error('Event Failed', e, payload);
   //   };
   //
   //   var sendComplete = function(payload, e) {
@@ -154,7 +159,7 @@ export function init(footprints){
   //   var actions = {
   //     pageView: function() {
   //       fire('pageView');
-  //     },
+    //     },
   //     user: function(userId, name, email) {
   //       setBasePayload('userId', userId);
   //       setBasePayload('name', name);
@@ -164,20 +169,20 @@ export function init(footprints){
   //       debug = b;
   //     }
   //   };
-  //
+    //
   //   var debug = false;
   //
   //   window.setInterval(function() {
-  //     processQueues();
+    //     processQueues();
   //   }, intervalWait);
   //
   //   return state;
   //
-  // })(footprints.q || [],
+    // })(footprints.q || [],
   //   footprints.argv[0] || (function(){ throw 'you must pass window to argv[0]'; })(),
   //   footprints.argv[1] || (function(){ throw 'you must pass document to argv[1]'; })(),
   //   footprints.argv[2] || (function(){ throw 'you must pass a script url to argv[2]'; })(),
-  //   footprints.argv[3] || (function(){ throw 'you must pass an endpoint url to argv[3]'; })(),
+    //   footprints.argv[3] || (function(){ throw 'you must pass an endpoint url to argv[3]'; })(),
   //   footprints.argv[4] || 1000,
   //   footprints.pageTime || 1*new Date()
   // );
