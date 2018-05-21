@@ -12,7 +12,7 @@ export function init(footprints){
 
   footprints.state = {
     basePayload: {},
-    inputQueue: [],
+    inputQueue: footprints.q || [],
     outputQueue: []
   };
   console.log(footprints);

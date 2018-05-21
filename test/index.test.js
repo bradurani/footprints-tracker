@@ -100,6 +100,12 @@ describe("Footprints", function(){
       expect(window.Footprints.options.pageTime).to.eql(new Date(2014, 2, 28));
     });
 
+    it('copy footprints.q to state.inputQueue', function(){
+      window.Footprints.q = [['pageView']]
+      init(window.Footprints);
+      expect(window.Footprints.state.inputQueue).to.eql([['pageView']]);
+    });
+
   });
 });
 
