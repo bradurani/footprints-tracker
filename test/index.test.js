@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { init } from "../src/index.js"
+import MockDate from "MockDate";
 
 describe("Footprints", function(){
   var window;
@@ -13,6 +14,10 @@ describe("Footprints", function(){
     window = global.window;
     document = global.document;
     window.Footprints = {};
+    MockDate.set('2014-02-28T00:00:00.000Z');
+  });
+  afterEach(function(){
+    MockDate.reset();
   });
 
   describe('performSetup', function() {
@@ -83,21 +88,29 @@ describe("Footprints", function(){
     it('initializes with empty state', function(){
       init(window.Footprints);
       expect(window.Footprints.state).to.eql({
-        basePayload: {},
+        basePayload: {
+          pageTime: new Date('2014-02-28')
+        },
         inputQueue: [],
         outputQueue: []
       })
-      expect(window.Footprints.options.endpointUrl).to.eql('http://my.domain/analytics');
-      expect(window.Footprints.options.intervalWait).to.eql(1000);
-      expect(window.Footprints.options.pageTime).to.be.an('date');
+      expect(window.Footprints.options).to.eql({
+        endpointUrl: 'http://my.domain/analytics',
+        intervalWait: 1000,
+        pageTime: new Date('2014-02-28')
+      });
     });
 
     it('allows overriding intervalWait and pageTime', function(){
       window.Footprints.argv[3].intervalWait = 2000
-      window.Footprints.argv[3].pageTime = new Date(2014, 2, 28);
+      window.Footprints.argv[3].pageTime = new Date(2018, 3, 6);
       init(window.Footprints);
-      expect(window.Footprints.options.intervalWait).to.eql(2000);
-      expect(window.Footprints.options.pageTime).to.eql(new Date(2014, 2, 28));
+      expect(window.Footprints.options).to.eql({
+        endpointUrl: 'http://my.domain/analytics',
+        intervalWait: 2000,
+        pageTime: new Date(2018, 3, 6)
+      });
+      expect(window.Footprints.state.basePayload.pageTime).to.eql(new Date(2018, 3, 6));
     });
 
     it('copy footprints.q to state.inputQueue', function(){
