@@ -11,6 +11,6 @@ module.exports = {
     new CleanWebpackPlugin(['dist'])
   ],
   optimization: {
-    minimize: false,
+    minimize: false
   }
 };

@@ -3,7 +3,7 @@
   <head>
     <title>Real News</title>
     <script>
-(function(w,d,s,u){
+(function(w,d,s,o){
   var fp = w['Footprints']=w['Footprints']||{};
   fp.pageTime=1*new Date();
   fp.argv = arguments;
@@ -15,7 +15,10 @@
   e.src=s;
   var t=d.getElementsByTagName('script')[0];
   t.parentNode.insertBefore(e,t);
-})(window,document,'dist/bundle.js', 'http://localhost:8000/vapid/analytic_events/', 1000);
+})(window, document, 'dist/bundle.js', {
+  endpointUrl: 'http://localhost:8000/vapid/analytic_events/',
+  timerInterval: 1000
+});
 
 Footprints.push('debug', true);
 Footprints.push('user', 1, 'Brad Urani', 'bradurani@gmail.com');

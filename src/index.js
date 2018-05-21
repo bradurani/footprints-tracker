@@ -6,8 +6,7 @@ import { ulid } from 'ulid';
 
 var LIB_NAME = 'Footprints';
 
-(function(fp) {
-
+export function init(footprints){
   (function(inputQueue, window, document, scriptUrl, endpointUrl, intervalWait, pageTime) {
 
     var basePayload = {};
@@ -17,7 +16,7 @@ var LIB_NAME = 'Footprints';
      * replace the push method from the snippet with one
      * that calls processQueue so we don't have to wait for the timer
      */
-    fp.push = function(){
+    footprints.push = function(){
       inputQueue.push(Array.prototype.slice.call(arguments));
       processQueues();
     };
@@ -151,12 +150,14 @@ var LIB_NAME = 'Footprints';
       processQueues();
     }, intervalWait);
 
-  })(fp.q || [],
-    fp.argv[0] || (function(){ throw 'you must pass window to argv[0]'; })(),
-    fp.argv[1] || (function(){ throw 'you must pass document to argv[1]'; })(),
-    fp.argv[2] || (function(){ throw 'you must pass a script url to argv[2]'; })(),
-    fp.argv[3] || (function(){ throw 'you must pass an endpoint url to argv[3]'; })(),
-    fp.argv[4] || 1000,
-    fp.pageTime || 1*new Date()
+  })(footprints.q || [],
+    footprints.argv[0] || (function(){ throw 'you must pass window to argv[0]'; })(),
+    footprints.argv[1] || (function(){ throw 'you must pass document to argv[1]'; })(),
+    footprints.argv[2] || (function(){ throw 'you must pass a script url to argv[2]'; })(),
+    footprints.argv[3] || (function(){ throw 'you must pass an endpoint url to argv[3]'; })(),
+    footprints.argv[4] || 1000,
+    footprints.pageTime || 1*new Date()
   );
-})(window[LIB_NAME] = window[LIB_NAME] || {});
+}
+
+init(window[LIB_NAME] = window[LIB_NAME] || {});
