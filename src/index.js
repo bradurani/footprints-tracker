@@ -3,12 +3,13 @@ import { ulid } from 'ulid';
 /* change args to options hash */
 /* ulid for page load */
 /* callbacks */
+/* lint for semicolons */
 
 var LIB_NAME = 'Footprints';
 
 export function init(footprints){
 
-  (function performSetup(footprints){
+  (function performSetup(){
 
     footprints.state = {
       basePayload: {},
@@ -16,11 +17,19 @@ export function init(footprints){
       outputQueue: []
     };
 
-    var msg = "you must set ";
     if (typeof footprints.argv == 'undefined'){
-      throw msg + "Footprints.argv"
+      throw LIB_NAME.toUpperCase() + ": your snippet must set " + LIB_NAME + ".argv";
     }
-  })(footprints)
+    ['window', 'document', 'scriptUrl', 'options'].forEach(function(name, index){
+      console.log(footprints.argv);
+      if(typeof footprints.argv[index] == 'undefined'){
+         throw LIB_NAME.toUpperCase() + ": you must pass " + name + " in argv[" + index + "]";
+      }
+    });
+    if(typeof footprints.argv.endpointUrl == 'undefined'){
+      throw LIB_NAME.toUpperCase() + ": you must pass the option endpointUrl";
+    }
+  })();
 
   // (function(inputQueue, window, document, scriptUrl, endpointUrl, intervalWait, pageTime) {
   //
@@ -174,4 +183,4 @@ export function init(footprints){
   // );
 }
 
-init(window[LIB_NAME] = window[LIB_NAME] || {});
+// init(window[LIB_NAME] = window[LIB_NAME] || {});
