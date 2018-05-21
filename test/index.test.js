@@ -14,10 +14,10 @@ describe("Footprints", function(){
   });
 
   describe('configure', function() {
-    it('initializes when all args are passed', function(){
+    it('raises an error if argv is not present', function(){
       expect(function(){
-        init(window.Footprints);
-      }).to.throw(Error);
+        init(window.Footprints)
+      }).to.throw('use must set Footprints.argv');
     });
   });
 });
