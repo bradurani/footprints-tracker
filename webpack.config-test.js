@@ -11,5 +11,6 @@ module.exports = {
   devtool: "inline-cheap-module-source-map",
   optimization: {
     minimize: false
-  }
+  },
+  mode: 'development'
 };

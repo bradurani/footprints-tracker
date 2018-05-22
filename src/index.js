@@ -18,9 +18,7 @@ export function init(footprints){
 
   (function performSetup(){
 
-    /**
-     * validate required argvs
-     */
+    // validate required argvs
     if (typeof footprints.argv == 'undefined'){
       throw LIB_NAME.toUpperCase() + ": your snippet must set " + LIB_NAME + ".argv";
     }
@@ -30,37 +28,29 @@ export function init(footprints){
       }
     });
 
-    /**
-     * validate options
-     */
+    // validate options
     footprints.options = footprints.argv[3];
     if(typeof footprints.options.endpointUrl == 'undefined'){
       throw LIB_NAME.toUpperCase() + ": you must pass the option endpointUrl";
     }
 
-    /**
-     * set default values for optional arguments
-     */
-    footprints.options.intervalWait = footprints.options.intervalWait || DEFAULT_INTERVAL_WAIT
+    // set default values for optional arguments
+    footprints.options.intervalWait = footprints.options.intervalWait || DEFAULT_INTERVAL_WAIT;
     footprints.options.debug = footprints.options.debug || false;
     footprints.options.pageTime  = footprints.options.pageTime || new Date();
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
 
-    /**
-     * replace the push method from the snippet with one
-     * that calls processQueue so we don't have to wait for the timer
-     */
+    // replace the push method from the snippet with one
+    // that calls processQueue so we don't have to wait for the timer
     footprints.push = function(){
       inputQueue.push(Array.prototype.slice.call(arguments));
       footprints.processQueues();
     };
 
-    /**
-     * set a timer to process retries periodicaly
-     */
+    // set a timer to process retries periodicaly
     window = footprints.argv[0];
     window.setInterval(function(){
-      if(typeof footprint.processQueue === 'function'){
+      if(typeof footprints.processQueue === 'function'){
         footprints.processQueues();
       }
     }, footprints.options.intervalWait);
@@ -68,8 +58,7 @@ export function init(footprints){
 
   (function run(inputQueue, outputQueue, basePayload, intervalWait) {
 
-
-    var processQueues = function(){
+    var processQueues = footprints.processQueues = function(){
       processInputQueue();
       processOutputQueue();
     }
@@ -95,7 +84,7 @@ export function init(footprints){
     };
 
     var toArray = function(args) {
-      return Array.prototype.slice.call(args);
+      return [].slice.call(args);
     };
 
     var clone = function(obj) {
@@ -187,7 +176,6 @@ export function init(footprints){
   })(footprints.state.inputQueue,
     footprints.state.outputQueue,
     footprints.state.basePayload);
-
 }
 
 // init(window[LIB_NAME] = window[LIB_NAME] || {});
