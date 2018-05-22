@@ -1,8 +1,9 @@
 import { ulid } from 'ulid';
+import { Promise } from 'promise-polyfill';
+import 'isomorphic-fetch';
 
-/* change args to options hash */
+/* ulid allow insecure */
 /* ulid for page load */
-/* callbacks */
 /* lint for semicolons */
 
 var LIB_NAME = 'Footprints';
@@ -117,42 +118,36 @@ export function init(footprints){
       var endingOutputQueue = [];
       try {
         while (payload = outputQueue.shift()) {
-          send(payload, function(){
-            endingOutputQueue.push(payload)
-          });
+          send(payload);
         }
       } finally {
         outputQueue = endingOutputQueue;
       }
     };
 
-    var send = function(payload, errCallback) {
+    var send = function(payload) {
       trace("sending event", payload)
-      var oReq = new XMLHttpRequest();
-      oReq.addEventListener("load", function(response){
-        console.log("RESPONSE", response);
+      fetch(endpointUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }).then(function(response){
         sendComplete(payload, response);
+      }).catch(function(e){
+        sendError(payload, e)
       });
-      oReq.addEventListener("error", function(e){
-        errCallback();
-        sendError(payload, e);
-      });
-      oReq.addEventListener("abort", function(e){
-        errCallback()
-        sendError(payload, e);
-      });
-      oReq.open("POST", endpointUrl);
-      oReq.send();
-    };
-
-    var sendError = function(payload, e) {
-      errorCallback(e)
-      error('Event Failed', e, payload);
     };
 
     var sendComplete = function(payload, response) {
       successCallback(response);
       trace('Event Sent', payload);
+    };
+
+    var sendError = function(payload, e) {
+      errorCallback(e)
+      error('Event Failed', e, payload);
     };
 
     var actions = {
