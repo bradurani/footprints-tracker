@@ -8,9 +8,6 @@ describe("Footprints", function(){
   var window;
   var document;
 
-  it("succeeds", function(){
-    expect(true).to.equal(true)
-  });
   beforeEach(function(){
     window = global.window;
     window.setInterval = sinon.fake();
@@ -105,15 +102,16 @@ describe("Footprints", function(){
       expect(window.setInterval.calledOnce);
     });
 
-    it('allows overriding intervalWait and pageTime', function(){
+    it('allows overriding intervalWait, debug and pageTime', function(){
       window.Footprints.argv[3].intervalWait = 2000
       window.Footprints.argv[3].pageTime = new Date(2018, 3, 6);
+      window.Footprints.argv[3].debug = true;
       init(window.Footprints);
       expect(window.Footprints.options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 2000,
         pageTime: new Date(2018, 3, 6),
-        debug: false
+        debug: true
       });
       expect(window.Footprints.state.basePayload.pageTime).to.eql(new Date(2018, 3, 6));
     });
