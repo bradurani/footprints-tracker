@@ -3,6 +3,7 @@ import { expect } from "chai";
 import { init } from "../src/index.js"
 import MockDate from "MockDate";
 import sinon from "sinon";
+import fetchMock from 'fetch-mock';
 
 describe("Footprints", function(){
   var window;
@@ -132,33 +133,29 @@ describe("Footprints", function(){
     });
 
     describe('with xhr', function(){
-      var server;
-      var request;
       var successCallback;
       var errorCallback;
 
       beforeEach(function(){
-        server = sinon.fakeServer.create();
-        successCallback = sinon.spy();
-        errorCallback = sinon.spy();
-        window.Footprints.argv[3].successCallback = successCallback;
-        window.Footprints.argv[3].errorCallback = errorCallback;
+        fetchMock.post('*', { eventId: '123' });
+        window.Footprints.argv[3].debug = true;
       });
 
       afterEach(function(){
-        server.restore();
+        fetchMock.restore();
       });
 
-      it('sends a pageView when an action is enqueued', function(){
-        server.respondWith('POST', 'http://my.domain/analytics',
-          [200, { 'Content-Type': 'application/json' }, '{ eventId: 123 }']);
+      it('sends a pageView when an action is enqueued', function(done){
+        window.Footprints.argv[3].successCallback = function(response){
+          expect(response.body).to.eql('{"eventId":"123"}')
+          expect(response.status).to.eql(200);
+          done();
+        };
+        window.Footprints.argv[3].errorCallback = function(error){
+          done(error);
+        }
         init(window.Footprints);
         window.Footprints.push('pageView')
-        server.respond();
-        console.log(successCallback);
-        console.log(successCallback.calledWith({ eventId: '123' }));
-        expect(successCallback.calledWith({ eventId: '123' })).to.eql(true);
-        expect(errorCallback.notCalled).to.eql(true);
       });
     })
   });
