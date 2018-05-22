@@ -11,8 +11,4 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(['dist'])
   ],
-  optimization: {
-    minimize: false
-  },
-  mode: 'production'
 };

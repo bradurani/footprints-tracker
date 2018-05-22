@@ -8,8 +8,9 @@
   ],
   "author": "Brad Urani",
   "scripts": {
-    "build": "webpack --devtool source-map",
-    "test": "mocha-webpack \"test/**/*.js\""
+    "dev": "webpack --mode development --watch",
+    "build": "webpack --devtool source-map --mode production",
+    "test": "webpack test/index.test.js --config webpack.config-test.js && mocha dist/main.js"
   },
   "dependencies": {
     "isomorphic-fetch": "^2.2.1",

@@ -1,6 +1,7 @@
 import { Promise } from 'promise-polyfill';
 import 'isomorphic-fetch';
 import { factory, detectPrng } from 'ulid';
+import 'jsdom-global/register';
 
 var prng = detectPrng(true); // pass `true` to allow insecure
 var ulid = factory(prng);
@@ -204,7 +205,6 @@ export function init(footprints){
   var clone = function(obj) {
     return JSON.parse(JSON.stringify(obj));
   };
-
 }
 
 // init(window[LIB_NAME] = window[LIB_NAME] || {});
