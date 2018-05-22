@@ -197,6 +197,25 @@ describe("Footprints", function(){
         window.Footprints.push('pageView')
         window.Footprints.push('pageView')
       });
+
+      it('failure retries', function(done){
+        fetchMock.post('http://my.domain/analytics', { eventId: '123' });
+        var s = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+          expect(response.body).to.eql('{"eventId":"123"}')
+          expect(response.status).to.eql(200);
+          if(s.callCount >= 3) {
+            done();
+          }
+        });
+        window.Footprints.argv[3].errorCallback = function(error){
+          done(error);
+        }
+        init(window.Footprints);
+        window.Footprints.push('pageView')
+        window.Footprints.push('pageView')
+        window.Footprints.push('pageView')
+      });
+
     })
   });
 });

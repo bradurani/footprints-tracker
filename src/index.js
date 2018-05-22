@@ -35,19 +35,23 @@ export function init(footprints){
     });
 
     // validate options
-    footprints.options = footprints.argv[3];
-    if(typeof footprints.options.endpointUrl == 'undefined'){
-      throw LIB_NAME.toUpperCase() + ": you must pass the option endpointUrl";
-    }
+    footprints.options = (function(opts){
+      if(typeof opts.endpointUrl == 'undefined'){
+        throw LIB_NAME.toUpperCase() + ": you must pass the option endpointUrl";
+      }
 
-    // set default values for optional arguments
-    footprints.options.intervalWait = footprints.options.intervalWait || DEFAULT_INTERVAL_WAIT;
-    footprints.options.debug = footprints.options.debug || false;
-    footprints.options.pageTime = (footprints.options.pageTime || new Date()).toISOString();
+      // set default values for optional arguments
+      opts.intervalWait = opts.intervalWait || DEFAULT_INTERVAL_WAIT;
+      opts.debug = opts.debug || false;
+      opts.pageTime = (opts.pageTime || new Date()).toISOString();
+      opts.successCallback = opts.successCallback || footprints.noop;
+      opts.errorCallback = opts.errorCallback || footprints.noop;
+      opts.uniqueId = opts.uniqueId || ulid;
+      return opts;
+    })(footprints.argv[3]);
+
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
-    footprints.options.successCallback = footprints.options.successCallback || footprints.noop;
-    footprints.options.errorCallback = footprints.options.errorCallback || footprints.noop;
-    footprints.options.uniqueId = footprints.options.uniqueId || ulid;
+
 
     // replace the push method from the snippet with one
     // that calls processQueue so we don't have to wait for the timer
