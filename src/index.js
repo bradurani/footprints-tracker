@@ -16,6 +16,8 @@ export function init(footprints){
     outputQueue: []
   };
 
+  footprints.noop = function(){};
+
   (function performSetup(){
 
     // validate required argvs
@@ -39,11 +41,14 @@ export function init(footprints){
     footprints.options.debug = footprints.options.debug || false;
     footprints.options.pageTime  = footprints.options.pageTime || new Date();
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
+    footprints.options.successCallback = footprints.options.successCallback || footprints.noop;
+    footprints.options.errorCallback = footprints.options.errorCallback || footprints.noop;
+    footprints.options.abortCallback = footprints.options.abortCallback || footprints.noop;
 
     // replace the push method from the snippet with one
     // that calls processQueue so we don't have to wait for the timer
     footprints.push = function(){
-      inputQueue.push(Array.prototype.slice.call(arguments));
+      footprints.state.inputQueue.push([].slice.call(arguments));
       footprints.processQueues();
     };
 
@@ -56,7 +61,16 @@ export function init(footprints){
     }, footprints.options.intervalWait);
   })();
 
-  (function run(inputQueue, outputQueue, basePayload, intervalWait) {
+  (function run(
+    inputQueue,
+    outputQueue,
+    basePayload,
+    debug,
+    endpointUrl,
+    successCallback,
+    errorCallback,
+    abortCallback
+  ) {
 
     var processQueues = footprints.processQueues = function(){
       processInputQueue();
@@ -83,6 +97,7 @@ export function init(footprints){
       }
     };
 
+    //do I need this?
     var toArray = function(args) {
       return [].slice.call(args);
     };
@@ -97,7 +112,7 @@ export function init(footprints){
 
     var fire = function(eventName) {
       var payload = clone(basePayload);
-      payload['eventTime'] = now();
+      payload['eventTime'] = new Date();
       payload['eventId'] = ulid();
       payload['eventName'] = eventName;
       enqueueOutput(payload);
@@ -175,7 +190,13 @@ export function init(footprints){
 
   })(footprints.state.inputQueue,
     footprints.state.outputQueue,
-    footprints.state.basePayload);
+    footprints.state.basePayload,
+    footprints.options.debug,
+    footprints.options.endpointUrl,
+    footprints.options.successCallback,
+    footprints.options.errorCallback,
+    footprints.options.abortCallback
+  );
 }
 
 // init(window[LIB_NAME] = window[LIB_NAME] || {});

@@ -70,8 +70,6 @@ describe("Footprints", function(){
           init(window.Footprints)
         }).to.throw('FOOTPRINTS: you must pass the option endpointUrl');
       });
-
-
     });
   });
 
@@ -97,7 +95,10 @@ describe("Footprints", function(){
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 1000,
         pageTime: new Date('2014-02-28'),
-        debug: false
+        debug: false,
+        successCallback: window.Footprints.noop,
+        errorCallback: window.Footprints.noop,
+        abortCallback: window.Footprints.noop
       });
       expect(window.setInterval.calledOnce);
     });
@@ -111,7 +112,10 @@ describe("Footprints", function(){
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 2000,
         pageTime: new Date(2018, 3, 6),
-        debug: true
+        debug: true,
+        successCallback: window.Footprints.noop,
+        errorCallback: window.Footprints.noop,
+        abortCallback: window.Footprints.noop
       });
       expect(window.Footprints.state.basePayload.pageTime).to.eql(new Date(2018, 3, 6));
     });
@@ -122,13 +126,44 @@ describe("Footprints", function(){
       expect(window.Footprints.state.inputQueue).to.eql([['pageView']]);
     });
 
-    it('overwrites footprints.push with a new versions', function(){
+    it('overwrites footprints.push with a new version', function(){
       var f = window.Footprints.push = function(){};
       init(window.Footprints);
       expect(window.Footprints.push).to.be.a('function');
       expect(window.Footprints.push).not.to.equal(f);
     });
 
+    describe('with xhr', function(){
+      var server;
+      var request;
+      var successCallback;
+      var errorCallback;
+      var abortCallback;
+
+      beforeEach(function(){
+        server = sinon.fakeServer.create();
+        successCallback = sinon.spy();
+        errorCallback = sinon.spy();
+        abortCallback = sinon.spy();
+        window.Footprints.argv[3].successCallback = successCallback;
+        window.Footprints.argv[3].errorCallback = errorCallback;
+        window.Footprints.argv[3].abortCallback = abortCallback;
+      });
+
+      afterEach(function(){
+        server.restore();
+      });
+
+      it('sends a pageView when an action is enqueued', function(){
+        server.respondWith('POST', 'http://my.domain/analytics',
+          [200, { 'Content-Type': 'application/json' }, '{ eventId: 123 }']);
+        init(window.Footprints);
+        window.Footprints.push('pageView')
+        window.Footprints.push('pageView');
+        expect(successCallback.calledWith({ eventId: '123' }));
+        expect(errorCallback.notCalled);
+        expect(abortCallback.notCalled);
+      });
+    })
   });
 });
-
