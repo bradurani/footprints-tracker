@@ -52,7 +52,6 @@ export function init(footprints){
 
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
 
-
     // replace the push method from the snippet with one
     // that calls processQueue so we don't have to wait for the timer
     footprints.push = function(){
@@ -138,10 +137,17 @@ export function init(footprints){
         },
         body: JSON.stringify(payload)
       }).then(function(response){
-        sendComplete(payload, response);
-      }).catch(function(e){
-        sendError(payload, e)
-      });
+        if (response.status >= 200 && response.status < 300) {
+          return response
+        } else {
+          var error = new Error(response.statusText)
+          error.response = response
+          throw error
+        }
+      }).then(sendComplete.bind(null, payload))
+        .catch(function(e){
+          sendError(payload, e)
+        });
     };
 
     var sendComplete = function(payload, response) {

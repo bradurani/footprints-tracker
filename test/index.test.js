@@ -167,7 +167,6 @@ describe("Footprints", function(){
           done(new Error());
         };
         window.Footprints.argv[3].errorCallback = function(error){
-          console.log(window.Footprints.state.outputQueue);
           expect(window.Footprints.state.outputQueue).to.eql([{
             eventName: 'pageView',
             pageTime: '2014-02-28T00:00:00.000Z',
@@ -198,23 +197,41 @@ describe("Footprints", function(){
         window.Footprints.push('pageView')
       });
 
-      it('failure retries', function(done){
-        fetchMock.post('http://my.domain/analytics', { eventId: '123' });
-        var s = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
-          expect(response.body).to.eql('{"eventId":"123"}')
-          expect(response.status).to.eql(200);
-          if(s.callCount >= 3) {
-            done();
-          }
-        });
+      it('fails on non-200 error code', function(done){
+        fetchMock.post('http://my.domain/analytics', 404);
+        window.Footprints.argv[3].successCallback = function(response){
+          done(new Error());
+        };
         window.Footprints.argv[3].errorCallback = function(error){
-          done(error);
+          expect(window.Footprints.state.outputQueue).to.eql([{
+            eventName: 'pageView',
+            pageTime: '2014-02-28T00:00:00.000Z',
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: '123abc'
+          }]);
+          done();
         }
         init(window.Footprints);
         window.Footprints.push('pageView')
-        window.Footprints.push('pageView')
-        window.Footprints.push('pageView')
       });
+
+      // it('failure retries', function(done){
+      //   fetchMock.post('http://my.domain/analytics', { eventId: '123' });
+      //   var s = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+      //     expect(response.body).to.eql('{"eventId":"123"}')
+      //     expect(response.status).to.eql(200);
+      //     if(s.callCount >= 3) {
+      //       done();
+      //     }
+      //   });
+      //   window.Footprints.argv[3].errorCallback = function(error){
+      //     done(error);
+      //   }
+      //   init(window.Footprints);
+      //   window.Footprints.push('pageView')
+      //   window.Footprints.push('pageView')
+      //   window.Footprints.push('pageView')
+      // });
 
     })
   });

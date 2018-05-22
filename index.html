@@ -3,26 +3,26 @@
   <head>
     <title>Real News</title>
     <script>
-(function(w,d,s,o){
-  var fp = w['Footprints']=w['Footprints']||{};
-  fp.pageTime=1*new Date();
-  fp.argv = arguments;
-  fp.push = function(){
-    (fp.q = fp.q||[]).push(Array.prototype.slice.call(arguments))
-  };
-  var e=d.createElement('script');
-  e.async=1;
-  e.src=s;
-  var t=d.getElementsByTagName('script')[0];
-  t.parentNode.insertBefore(e,t);
-})(window, document, 'dist/bundle.js', {
-  endpointUrl: 'http://localhost:8000/vapid/analytic_events/',
-  timerInterval: 1000
-});
+      (function(w,d,s,o){
+        var fp = w['Footprints']=w['Footprints']||{};
+        fp.pageTime=new Date();
+        fp.argv = arguments;
+        fp.push = function(){
+          (fp.q = fp.q||[]).push([].slice.call(arguments))
+        };
+        var e=d.createElement('script');
+        e.async=1;
+        e.src=s;
+        var t=d.getElementsByTagName('script')[0];
+        t.parentNode.insertBefore(e,t);
+      })(window, document, 'dist/bundle.js', {
+        endpointUrl: 'http://localhost:8000/vapid/analytic_events/',
+        timerInterval: 1000,
+        debug: true
+      });
 
-Footprints.push('debug', true);
-Footprints.push('user', 1, 'Brad Urani', 'bradurani@gmail.com');
-Footprints.push('pageView');
+      Footprints.push('user', 1, 'Brad Urani', 'bradurani@gmail.com');
+      Footprints.push('pageView');
 
     </script>
   </head>
