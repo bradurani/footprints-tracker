@@ -1,6 +1,9 @@
-import { ulid } from 'ulid';
 import { Promise } from 'promise-polyfill';
 import 'isomorphic-fetch';
+import { factory, detectPrng } from 'ulid';
+
+var prng = detectPrng(true); // pass `true` to allow insecure
+var ulid = factory(prng);
 
 /* ulid allow insecure */
 /* ulid for page load */
@@ -40,7 +43,7 @@ export function init(footprints){
     // set default values for optional arguments
     footprints.options.intervalWait = footprints.options.intervalWait || DEFAULT_INTERVAL_WAIT;
     footprints.options.debug = footprints.options.debug || false;
-    footprints.options.pageTime  = footprints.options.pageTime || new Date();
+    footprints.options.pageTime = (footprints.options.pageTime || new Date()).toISOString();
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
     footprints.options.successCallback = footprints.options.successCallback || footprints.noop;
     footprints.options.errorCallback = footprints.options.errorCallback || footprints.noop;

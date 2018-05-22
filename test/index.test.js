@@ -4,7 +4,6 @@ import { init } from "../src/index.js"
 import MockDate from "MockDate";
 import sinon from "sinon";
 import fetchMock from 'fetch-mock';
-import { ulid } from 'ulid';
 
 describe("Footprints", function(){
   var window;
@@ -88,38 +87,37 @@ describe("Footprints", function(){
       init(window.Footprints);
       expect(window.Footprints.state).to.eql({
         basePayload: {
-          pageTime: new Date('2014-02-28')
-        },
+          pageTime: '2014-02-28T00:00:00.000Z',        },
         inputQueue: [],
         outputQueue: []
       })
-      expect(window.Footprints.options).to.eql({
+      expect(window.Footprints.options).to.contain({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 1000,
-        pageTime: new Date('2014-02-28'),
+        pageTime: '2014-02-28T00:00:00.000Z',
         debug: false,
         successCallback: window.Footprints.noop,
         errorCallback: window.Footprints.noop,
-        uniqueId: ulid
       });
       expect(window.setInterval.calledOnce).to.eql(true);
     });
 
-    it('allows overriding intervalWait, debug and pageTime', function(){
+    it('allows overriding intervalWait, debug, pageTime and uniqueId', function(){
       window.Footprints.argv[3].intervalWait = 2000
       window.Footprints.argv[3].pageTime = new Date(2018, 3, 6);
       window.Footprints.argv[3].debug = true;
+      var uid = window.Footprints.argv[3].uniqueId = function(){};
       init(window.Footprints);
       expect(window.Footprints.options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 2000,
-        pageTime: new Date(2018, 3, 6),
+        pageTime: '2018-04-06T07:00:00.000Z',
         debug: true,
         successCallback: window.Footprints.noop,
         errorCallback: window.Footprints.noop,
-        uniqueId: ulid
+        uniqueId: uid
       });
-      expect(window.Footprints.state.basePayload.pageTime).to.eql(new Date(2018, 3, 6));
+      expect(window.Footprints.state.basePayload.pageTime).to.eql('2018-04-06T07:00:00.000Z');
     });
 
     it('copy footprints.q to state.inputQueue', function(){
