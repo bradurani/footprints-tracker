@@ -43,12 +43,11 @@ export function init(footprints){
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
     footprints.options.successCallback = footprints.options.successCallback || footprints.noop;
     footprints.options.errorCallback = footprints.options.errorCallback || footprints.noop;
-    footprints.options.abortCallback = footprints.options.abortCallback || footprints.noop;
 
     // replace the push method from the snippet with one
     // that calls processQueue so we don't have to wait for the timer
     footprints.push = function(){
-      footprints.state.inputQueue.push([].slice.call(arguments));
+      footprints.state.inputQueue.push(toArray(arguments));
       footprints.processQueues();
     };
 
@@ -68,8 +67,7 @@ export function init(footprints){
     debug,
     endpointUrl,
     successCallback,
-    errorCallback,
-    abortCallback
+    errorCallback
   ) {
 
     var processQueues = footprints.processQueues = function(){
@@ -95,15 +93,6 @@ export function init(footprints){
       } else {
         error("Unknown function", actionName);
       }
-    };
-
-    //do I need this?
-    var toArray = function(args) {
-      return [].slice.call(args);
-    };
-
-    var clone = function(obj) {
-      return JSON.parse(JSON.stringify(obj));
     };
 
     var setBasePayload = function(key, value){
@@ -140,17 +129,41 @@ export function init(footprints){
     var send = function(payload, errCallback) {
       trace("sending event", payload)
       var oReq = new XMLHttpRequest();
-      oReq.addEventListener("load", sendComplete.bind(null, payload));
-      oReq.addEventListener("error", function(){
-        errCallback();
-        sendError.bind(null, payload);
+      oReq.addEventListener("load", function(response){
+        console.log("RESPONSE", response);
+        sendComplete(payload, response);
       });
-      oReq.addEventListener("abort", function(){
+      oReq.addEventListener("error", function(e){
+        errCallback();
+        sendError(payload, e);
+      });
+      oReq.addEventListener("abort", function(e){
         errCallback()
-        sendError.bind(null, payload);
+        sendError(payload, e);
       });
       oReq.open("POST", endpointUrl);
       oReq.send();
+    };
+
+    var sendError = function(payload, e) {
+      errorCallback(e)
+      error('Event Failed', e, payload);
+    };
+
+    var sendComplete = function(payload, response) {
+      successCallback(response);
+      trace('Event Sent', payload);
+    };
+
+    var actions = {
+      pageView: function() {
+        fire('pageView');
+      },
+      user: function(userId, name, email) {
+        setBasePayload('userId', userId);
+        setBasePayload('name', name);
+        setBasePayload('email', email);
+      },
     };
 
     var trace = function() {
@@ -168,35 +181,23 @@ export function init(footprints){
         console.error.apply(this, args);
       }
     };
-
-    var sendError = function(payload, e) {
-      error('Event Failed', e, payload);
-    };
-
-    var sendComplete = function(payload, e) {
-      trace('Event Sent', payload);
-    };
-
-    var actions = {
-      pageView: function() {
-        fire('pageView');
-      },
-      user: function(userId, name, email) {
-        setBasePayload('userId', userId);
-        setBasePayload('name', name);
-        setBasePayload('email', email);
-      },
-    };
-
   })(footprints.state.inputQueue,
     footprints.state.outputQueue,
     footprints.state.basePayload,
     footprints.options.debug,
     footprints.options.endpointUrl,
     footprints.options.successCallback,
-    footprints.options.errorCallback,
-    footprints.options.abortCallback
+    footprints.options.errorCallback
   );
+
+  var toArray = function(args) {
+    return [].slice.call(args);
+  };
+
+  var clone = function(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  };
+
 }
 
 // init(window[LIB_NAME] = window[LIB_NAME] || {});

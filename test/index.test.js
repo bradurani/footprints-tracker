@@ -97,10 +97,9 @@ describe("Footprints", function(){
         pageTime: new Date('2014-02-28'),
         debug: false,
         successCallback: window.Footprints.noop,
-        errorCallback: window.Footprints.noop,
-        abortCallback: window.Footprints.noop
+        errorCallback: window.Footprints.noop
       });
-      expect(window.setInterval.calledOnce);
+      expect(window.setInterval.calledOnce).to.eql(true);
     });
 
     it('allows overriding intervalWait, debug and pageTime', function(){
@@ -114,8 +113,7 @@ describe("Footprints", function(){
         pageTime: new Date(2018, 3, 6),
         debug: true,
         successCallback: window.Footprints.noop,
-        errorCallback: window.Footprints.noop,
-        abortCallback: window.Footprints.noop
+        errorCallback: window.Footprints.noop
       });
       expect(window.Footprints.state.basePayload.pageTime).to.eql(new Date(2018, 3, 6));
     });
@@ -138,16 +136,13 @@ describe("Footprints", function(){
       var request;
       var successCallback;
       var errorCallback;
-      var abortCallback;
 
       beforeEach(function(){
         server = sinon.fakeServer.create();
         successCallback = sinon.spy();
         errorCallback = sinon.spy();
-        abortCallback = sinon.spy();
         window.Footprints.argv[3].successCallback = successCallback;
         window.Footprints.argv[3].errorCallback = errorCallback;
-        window.Footprints.argv[3].abortCallback = abortCallback;
       });
 
       afterEach(function(){
@@ -159,10 +154,11 @@ describe("Footprints", function(){
           [200, { 'Content-Type': 'application/json' }, '{ eventId: 123 }']);
         init(window.Footprints);
         window.Footprints.push('pageView')
-        window.Footprints.push('pageView');
-        expect(successCallback.calledWith({ eventId: '123' }));
-        expect(errorCallback.notCalled);
-        expect(abortCallback.notCalled);
+        server.respond();
+        console.log(successCallback);
+        console.log(successCallback.calledWith({ eventId: '123' }));
+        expect(successCallback.calledWith({ eventId: '123' })).to.eql(true);
+        expect(errorCallback.notCalled).to.eql(true);
       });
     })
   });
