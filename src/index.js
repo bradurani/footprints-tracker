@@ -44,6 +44,7 @@ export function init(footprints){
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
     footprints.options.successCallback = footprints.options.successCallback || footprints.noop;
     footprints.options.errorCallback = footprints.options.errorCallback || footprints.noop;
+    footprints.options.uniqueId = footprints.options.uniqueId || ulid;
 
     // replace the push method from the snippet with one
     // that calls processQueue so we don't have to wait for the timer
@@ -68,7 +69,8 @@ export function init(footprints){
     debug,
     endpointUrl,
     successCallback,
-    errorCallback
+    errorCallback,
+    uniqueId
   ) {
 
     var processQueues = footprints.processQueues = function(){
@@ -102,8 +104,8 @@ export function init(footprints){
 
     var fire = function(eventName) {
       var payload = clone(basePayload);
-      payload['eventTime'] = new Date();
-      payload['eventId'] = ulid();
+      payload['eventTime'] = new Date().toISOString();
+      payload['eventId'] = uniqueId();
       payload['eventName'] = eventName;
       enqueueOutput(payload);
     };
@@ -115,13 +117,8 @@ export function init(footprints){
     var processOutputQueue = function() {
       trace("processing output queue");
       var payload;
-      var endingOutputQueue = [];
-      try {
-        while (payload = outputQueue.shift()) {
-          send(payload);
-        }
-      } finally {
-        outputQueue = endingOutputQueue;
+      while (payload = outputQueue.shift()) {
+        send(payload);
       }
     };
 
@@ -146,6 +143,7 @@ export function init(footprints){
     };
 
     var sendError = function(payload, e) {
+      enqueueOutput(payload);
       errorCallback(e)
       error('Event Failed', e, payload);
     };
@@ -182,7 +180,8 @@ export function init(footprints){
     footprints.options.debug,
     footprints.options.endpointUrl,
     footprints.options.successCallback,
-    footprints.options.errorCallback
+    footprints.options.errorCallback,
+    footprints.options.uniqueId
   );
 
   var toArray = function(args) {

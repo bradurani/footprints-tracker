@@ -4,6 +4,7 @@ import { init } from "../src/index.js"
 import MockDate from "MockDate";
 import sinon from "sinon";
 import fetchMock from 'fetch-mock';
+import { ulid } from 'ulid';
 
 describe("Footprints", function(){
   var window;
@@ -98,7 +99,8 @@ describe("Footprints", function(){
         pageTime: new Date('2014-02-28'),
         debug: false,
         successCallback: window.Footprints.noop,
-        errorCallback: window.Footprints.noop
+        errorCallback: window.Footprints.noop,
+        uniqueId: ulid
       });
       expect(window.setInterval.calledOnce).to.eql(true);
     });
@@ -114,7 +116,8 @@ describe("Footprints", function(){
         pageTime: new Date(2018, 3, 6),
         debug: true,
         successCallback: window.Footprints.noop,
-        errorCallback: window.Footprints.noop
+        errorCallback: window.Footprints.noop,
+        uniqueId: ulid
       });
       expect(window.Footprints.state.basePayload.pageTime).to.eql(new Date(2018, 3, 6));
     });
@@ -137,8 +140,10 @@ describe("Footprints", function(){
       var errorCallback;
 
       beforeEach(function(){
-        fetchMock.post('*', { eventId: '123' });
-        window.Footprints.argv[3].debug = true;
+        // window.Footprints.argv[3].debug = true;
+        window.Footprints.argv[3].uniqueId = function(){
+          return '123abc';
+        }
       });
 
       afterEach(function(){
@@ -146,6 +151,7 @@ describe("Footprints", function(){
       });
 
       it('sends a pageView when an action is enqueued', function(done){
+        fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' });
         window.Footprints.argv[3].successCallback = function(response){
           expect(response.body).to.eql('{"eventId":"123"}')
           expect(response.status).to.eql(200);
@@ -155,6 +161,42 @@ describe("Footprints", function(){
           done(error);
         }
         init(window.Footprints);
+        window.Footprints.push('pageView')
+      });
+
+      it('calls the error callback if the POST errors', function(done){
+        window.Footprints.argv[3].successCallback = function(response){
+          done(new Error());
+        };
+        window.Footprints.argv[3].errorCallback = function(error){
+          console.log(window.Footprints.state.outputQueue);
+          expect(window.Footprints.state.outputQueue).to.eql([{
+            eventName: 'pageView',
+            pageTime: '2014-02-28T00:00:00.000Z',
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: '123abc'
+          }]);
+          done();
+        }
+        init(window.Footprints);
+        window.Footprints.push('pageView')
+      });
+
+      it('make multiple successful calls', function(done){
+        fetchMock.post('http://my.domain/analytics', { eventId: '123' });
+        var s = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+          expect(response.body).to.eql('{"eventId":"123"}')
+          expect(response.status).to.eql(200);
+          if(s.callCount >= 3) {
+            done();
+          }
+        });
+        window.Footprints.argv[3].errorCallback = function(error){
+          done(error);
+        }
+        init(window.Footprints);
+        window.Footprints.push('pageView')
+        window.Footprints.push('pageView')
         window.Footprints.push('pageView')
       });
     })
