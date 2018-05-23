@@ -1,4 +1,5 @@
-# Footprints JavaScript SDK
+# Footprints
+
 
 ## Installation
 

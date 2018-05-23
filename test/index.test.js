@@ -11,9 +11,9 @@ describe("Footprints", function(){
 
   beforeEach(function(){
     window = global.window;
+    window.Footprints = {};
     window.setInterval = sinon.fake();
     document = global.document;
-    window.Footprints = {};
     MockDate.set('2014-02-28T00:00:00.000Z');
   });
   afterEach(function(){
@@ -163,6 +163,7 @@ describe("Footprints", function(){
       });
 
       it('calls the error callback if the POST errors', function(done){
+        fetchMock.postOnce('http://my.domain/analytics', 403);
         window.Footprints.argv[3].successCallback = function(response){
           done(new Error());
         };
@@ -312,12 +313,18 @@ describe("Footprints", function(){
           setTimeout(function(){
             window.Footprints.push('pageView', 5);
             window.Footprints.push('pageView', 6);
-          }, 100)
-        }, 100)
+          }, 100);
+        }, 100);
         setTimeout(function(){
           fetchMock.post('http://my.domain/analytics', 200, { overwriteRoutes: true });
           window.Footprints.push('pageView', 7);
-        }, 300)
+        }, 300);
+      });
+
+      describe('user',function(done){
+        it('sends a pageView payload with the default format', function(){
+
+        });
       });
     });
   });

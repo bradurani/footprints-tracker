@@ -1,12 +1,10 @@
-import { Promise } from 'promise-polyfill';
-import 'isomorphic-fetch';
+// import { Promise } from 'promise-polyfill';
+// import 'isomorphic-fetch';
 import { factory, detectPrng } from 'ulid';
-import 'jsdom-global/register';
 
 var prng = detectPrng(true); // pass `true` to allow insecure
 var ulid = factory(prng);
 
-/* ulid allow insecure */
 /* ulid for page load */
 /* lint for semicolons */
 
@@ -207,4 +205,6 @@ export function init(footprints){
   };
 }
 
-// init(window[LIB_NAME] = window[LIB_NAME] || {});
+if(window[LIB_NAME]){
+  init(window[LIB_NAME] = window[LIB_NAME] || {});
+}
