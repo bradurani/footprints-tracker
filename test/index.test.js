@@ -138,7 +138,6 @@ describe("Footprints", function(){
       var errorCallback;
 
       beforeEach(function(){
-        fetchMock.reset();
         window.Footprints.argv[3].debug = true;
         window.Footprints.argv[3].uniqueId = function(){
           return '123abc';
@@ -150,7 +149,7 @@ describe("Footprints", function(){
       });
 
       it('sends a pageView when an action is enqueued', function(done){
-        fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' });
+        fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' }, { name: '1 pageview' });
         window.Footprints.argv[3].successCallback = function(response){
           expect(response.body).to.eql('{"eventId":"123"}')
           expect(response.status).to.eql(200);
