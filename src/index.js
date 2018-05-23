@@ -206,5 +206,5 @@ export function init(footprints){
 }
 
 if(window[LIB_NAME]){
-  init(window[LIB_NAME] = window[LIB_NAME] || {});
+  init(window[LIB_NAME]);
 }
