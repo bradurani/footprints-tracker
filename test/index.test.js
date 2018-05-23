@@ -7,13 +7,12 @@ import fetchMock from 'fetch-mock';
 
 describe("Footprints", function(){
   var window;
-  var document;
+  var footprints;
 
   beforeEach(function(){
     window = global.window;
-    window.Footprints = {};
+    footprints = window.Footprints = {};
     window.setInterval = sinon.fake();
-    document = global.document;
     MockDate.set('2014-02-28T00:00:00.000Z');
   });
   afterEach(function(){
@@ -21,116 +20,87 @@ describe("Footprints", function(){
   });
 
   describe('performSetup', function() {
-    it('raises an error if argv is not present', function(){
+    it('raises an error if options is not present', function(){
       expect(function(){
-        init(window.Footprints)
-      }).to.throw('FOOTPRINTS: your snippet must set Footprints.argv');
+        init(footprints)
+      }).to.throw('FOOTPRINTS: your snippet must set Footprints.options');
     });
 
-    describe('with argv', function(){
+    describe('with options', function(){
+      var options;
+
       beforeEach(function(){
-        window.Footprints.argv = [];
-      });
-
-      it("raises an error if argv does not contain window", function(){
-        expect(function(){
-          init(window.Footprints)
-        }).to.throw('FOOTPRINTS: you must pass window in argv[0]');
-      });
-
-      it("raises an error if argv does not contain document", function(){
-        window.Footprints.argv.push(window);
-        expect(function(){
-          init(window.Footprints)
-        }).to.throw('FOOTPRINTS: you must pass document in argv[1]');
-      });
-
-      it("raises an error if argv does not contain scriptUrl", function(){
-        window.Footprints.argv.push(window);
-        window.Footprints.argv.push(document);
-        expect(function(){
-          init(window.Footprints)
-        }).to.throw('FOOTPRINTS: you must pass scriptUrl in argv[2]');
-      });
-
-      it("raises an error if argv does not contain options", function(){
-        window.Footprints.argv.push(window);
-        window.Footprints.argv.push(document);
-        window.Footprints.argv.push('http://my.host/script.js');
-        expect(function(){
-          init(window.Footprints)
-        }).to.throw('FOOTPRINTS: you must pass options in argv[3]');
+        options = window.Footprints.options = {};
       });
 
       it('raises an error if options.endpointUrl is not present', function(){
-        window.Footprints.argv.push(window);
-        window.Footprints.argv.push(document);
-        window.Footprints.argv.push('http://my.host/script.js');
-        window.Footprints.argv.push({});
         expect(function(){
-          init(window.Footprints)
+          init(footprints)
         }).to.throw('FOOTPRINTS: you must pass the option endpointUrl');
       });
     });
   });
 
   describe('with valid configuration', function(){
+    var options;
+
     beforeEach(function(){
-      window.Footprints = {
-        argv: [window, document, 'http://my.domain/script.js', {
-          endpointUrl: 'http://my.domain/analytics'
-        }]
+      options = {
+        endpointUrl: 'http://my.domain/analytics'
+      }
+      footprints = window.Footprints = {
+        options: options
       };
     });
 
     it('initializes with empty state', function(){
-      init(window.Footprints);
-      expect(window.Footprints.state).to.eql({
+      init(footprints);
+      expect(footprints.state).to.eql({
         basePayload: {
           pageTime: '2014-02-28T00:00:00.000Z',        },
         inputQueue: [],
         outputQueue: []
       })
-      expect(window.Footprints.options).to.contain({
+      expect(options).to.contain({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 1000,
         pageTime: '2014-02-28T00:00:00.000Z',
         debug: false,
-        successCallback: window.Footprints.noop,
-        errorCallback: window.Footprints.noop,
+        successCallback: footprints.noop,
+        errorCallback: footprints.noop,
       });
       expect(window.setInterval.calledOnce).to.eql(true);
     });
 
     it('allows overriding intervalWait, debug, pageTime and uniqueId', function(){
-      window.Footprints.argv[3].intervalWait = 2000
-      window.Footprints.argv[3].pageTime = new Date(2018, 3, 6);
-      window.Footprints.argv[3].debug = true;
-      var uid = window.Footprints.argv[3].uniqueId = function(){};
-      init(window.Footprints);
-      expect(window.Footprints.options).to.eql({
+      options.intervalWait = 2000
+      options.pageTime = new Date(2018, 3, 6);
+      options.debug = true;
+      var uid = options.uniqueId = function(){};
+      init(footprints);
+      expect(options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 2000,
         pageTime: '2018-04-06T07:00:00.000Z',
         debug: true,
-        successCallback: window.Footprints.noop,
-        errorCallback: window.Footprints.noop,
+        successCallback: footprints.noop,
+        errorCallback: footprints.noop,
         uniqueId: uid
       });
-      expect(window.Footprints.state.basePayload.pageTime).to.eql('2018-04-06T07:00:00.000Z');
+      expect(footprints.state.basePayload.pageTime).to.eql('2018-04-06T07:00:00.000Z');
     });
 
     it('copy footprints.q to state.inputQueue', function(){
-      window.Footprints.q = [['pageView']]
-      init(window.Footprints);
-      expect(window.Footprints.state.inputQueue).to.eql([['pageView']]);
+      footprints.q = [['pageView']]
+      init(footprints);
+      expect(footprints.state.inputQueue).to.eql([['pageView']]);
     });
 
     it('overwrites footprints.push with a new version', function(){
-      var f = window.Footprints.push = function(){};
-      init(window.Footprints);
-      expect(window.Footprints.push).to.be.a('function');
-      expect(window.Footprints.push).not.to.equal(f);
+      var f = footprints.push = function(){};
+      init(footprints);
+      expect(footprints.push).to.be.a('function');
+      expect(footprints.push).not.to.equal(f);
     });
 
     describe('with xhr', function(){
@@ -138,8 +108,8 @@ describe("Footprints", function(){
       var errorCallback;
 
       beforeEach(function(){
-        window.Footprints.argv[3].debug = true;
-        window.Footprints.argv[3].uniqueId = function(){
+        // options.debug = true;
+        options.uniqueId = function(){
           return '123abc';
         }
       });
@@ -150,25 +120,25 @@ describe("Footprints", function(){
 
       it('sends a pageView when an action is enqueued', function(done){
         fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' });
-        window.Footprints.argv[3].successCallback = function(response){
+        options.successCallback = function(response){
           expect(response.body).to.eql('{"eventId":"123"}')
           expect(response.status).to.eql(200);
           done();
         };
-        window.Footprints.argv[3].errorCallback = function(error){
+        options.errorCallback = function(error){
           done(error);
         }
-        init(window.Footprints);
-        window.Footprints.push('pageView')
+        init(footprints);
+        footprints.push('pageView')
       });
 
       it('calls the error callback if the POST errors', function(done){
         fetchMock.postOnce('http://my.domain/analytics', 403);
-        window.Footprints.argv[3].successCallback = function(response){
+        options.successCallback = function(response){
           done(new Error());
         };
-        window.Footprints.argv[3].errorCallback = function(error){
-          expect(window.Footprints.state.outputQueue).to.eql([{
+        options.errorCallback = function(error){
+          expect(footprints.state.outputQueue).to.eql([{
             eventName: 'pageView',
             pageTime: '2014-02-28T00:00:00.000Z',
             eventTime: '2014-02-28T00:00:00.000Z',
@@ -176,35 +146,35 @@ describe("Footprints", function(){
           }]);
           done();
         }
-        init(window.Footprints);
-        window.Footprints.push('pageView')
+        init(footprints);
+        footprints.push('pageView')
       });
 
       it('make multiple successful calls', function(done){
         fetchMock.post('http://my.domain/analytics', { eventId: '123' });
-        var s = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+        var s = options.successCallback = sinon.fake(function(response){
           expect(response.body).to.eql('{"eventId":"123"}')
           expect(response.status).to.eql(200);
           if(s.callCount >= 3) {
             done();
           }
         });
-        window.Footprints.argv[3].errorCallback = function(error){
+        options.errorCallback = function(error){
           done(error);
         }
-        init(window.Footprints);
-        window.Footprints.push('pageView')
-        window.Footprints.push('pageView')
-        window.Footprints.push('pageView')
+        init(footprints);
+        footprints.push('pageView')
+        footprints.push('pageView')
+        footprints.push('pageView')
       });
 
       it('fails on non-200 error code', function(done){
         fetchMock.post('http://my.domain/analytics', 404);
-        window.Footprints.argv[3].successCallback = function(response){
+        options.successCallback = function(response){
           done(new Error());
         };
-        window.Footprints.argv[3].errorCallback = function(error){
-          expect(window.Footprints.state.outputQueue).to.eql([{
+        options.errorCallback = function(error){
+          expect(footprints.state.outputQueue).to.eql([{
             eventName: 'pageView',
             pageTime: '2014-02-28T00:00:00.000Z',
             eventTime: '2014-02-28T00:00:00.000Z',
@@ -212,8 +182,8 @@ describe("Footprints", function(){
           }]);
           done();
         }
-        init(window.Footprints);
-        window.Footprints.push('pageView')
+        init(footprints);
+        footprints.push('pageView')
       });
 
       it('a failed page retries when another is enqueued', function(done){
@@ -223,7 +193,7 @@ describe("Footprints", function(){
         fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '4'}, { overwriteRoutes: false, repeat: 1});
         fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '5'}, { overwriteRoutes: false, repeat: 1});
         fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '6'}, { overwriteRoutes: false, repeat: 1});
-        var suc = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+        var suc = options.successCallback = sinon.fake(function(response){
           expect(JSON.parse(response.body).eventId).to.eql('123');
           expect(response.status).to.eql(200);
           if(suc.callCount == 3){
@@ -232,16 +202,16 @@ describe("Footprints", function(){
             done();
           }
         });
-        var err = window.Footprints.argv[3].errorCallback = sinon.fake(function(error){});
-        init(window.Footprints);
+        var err = options.errorCallback = sinon.fake(function(error){});
+        init(footprints);
         setTimeout(function(){
-          window.Footprints.push('pageView', 1);
+          footprints.push('pageView', 1);
         }, 100);
         setTimeout(function(){
-          window.Footprints.push('pageView', 2);
+          footprints.push('pageView', 2);
         }, 200);
         setTimeout(function(){
-          window.Footprints.push('pageView', 3);
+          footprints.push('pageView', 3);
         }, 300);
       });
 
@@ -252,7 +222,7 @@ describe("Footprints", function(){
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: 4});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: 5});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: 6});
-        var suc = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+        var suc = options.successCallback = sinon.fake(function(response){
           expect(JSON.parse(response.body).eventId).to.eql('123');
           expect(response.status).to.eql(200);
           if(suc.callCount == 3){
@@ -261,13 +231,13 @@ describe("Footprints", function(){
             done();
           }
         });
-        var err = window.Footprints.argv[3].errorCallback = sinon.fake(function(error){});
-        init(window.Footprints);
-        window.Footprints.push('pageView', 1);
-        window.Footprints.push('pageView', 2);
-        window.Footprints.push('pageView', 3);
+        var err = options.errorCallback = sinon.fake(function(error){});
+        init(footprints);
+        footprints.push('pageView', 1);
+        footprints.push('pageView', 2);
+        footprints.push('pageView', 3);
         setTimeout(function(){
-          window.Footprints.processQueues();
+          footprints.processQueues();
         }, 100);
       });
 
@@ -277,7 +247,7 @@ describe("Footprints", function(){
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: '3'});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: '4'});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: '5'});
-        var suc = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+        var suc = options.successCallback = sinon.fake(function(response){
           expect(JSON.parse(response.body).eventId).to.eql('123');
           expect(response.status).to.eql(200);
           if(suc.callCount == 3){
@@ -286,38 +256,38 @@ describe("Footprints", function(){
             done();
           }
         });
-        var err = window.Footprints.argv[3].errorCallback = sinon.fake(function(error){});
-        init(window.Footprints);
-        window.Footprints.push('pageView', 1);
-        window.Footprints.push('pageView', 2);
+        var err = options.errorCallback = sinon.fake(function(error){});
+        init(footprints);
+        footprints.push('pageView', 1);
+        footprints.push('pageView', 2);
         setTimeout(function(){
-          window.Footprints.push('pageView', 3);
+          footprints.push('pageView', 3);
         }, 100)
       });
 
       it('succeeds with scattered timing', function(done){
         fetchMock.post('http://my.domain/analytics', { status: 401 });
-        var suc = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+        var suc = options.successCallback = sinon.fake(function(response){
           expect(response.status).to.eql(200);
           if(suc.callCount == 7){
             done();
           }
         });
-        var err = window.Footprints.argv[3].errorCallback = sinon.fake(function(error){});
-        init(window.Footprints);
-        window.Footprints.push('pageView', 1);
-        window.Footprints.push('pageView', 2);
+        var err = options.errorCallback = sinon.fake(function(error){});
+        init(footprints);
+        footprints.push('pageView', 1);
+        footprints.push('pageView', 2);
         setTimeout(function(){
-          window.Footprints.push('pageView', 3);
-          window.Footprints.push('pageView', 4);
+          footprints.push('pageView', 3);
+          footprints.push('pageView', 4);
           setTimeout(function(){
-            window.Footprints.push('pageView', 5);
-            window.Footprints.push('pageView', 6);
+            footprints.push('pageView', 5);
+            footprints.push('pageView', 6);
           }, 100);
         }, 100);
         setTimeout(function(){
           fetchMock.post('http://my.domain/analytics', 200, { overwriteRoutes: true });
-          window.Footprints.push('pageView', 7);
+          footprints.push('pageView', 7);
         }, 300);
       });
 

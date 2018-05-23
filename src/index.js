@@ -23,18 +23,14 @@ export function init(footprints){
 
   (function performSetup(){
 
-    // validate required argvs
-    if (typeof footprints.argv == 'undefined'){
-      throw LIB_NAME.toUpperCase() + ": your snippet must set " + LIB_NAME + ".argv";
+    // validate required optionss
+    if (typeof footprints.options == 'undefined'){
+      throw LIB_NAME.toUpperCase() + ": your snippet must set " +
+        LIB_NAME + ".options to the options object";
     }
-    ['window', 'document', 'scriptUrl', 'options'].forEach(function(name, index){
-      if(typeof footprints.argv[index] == 'undefined'){
-        throw LIB_NAME.toUpperCase() + ": you must pass " + name + " in argv[" + index + "]";
-      }
-    });
 
     // validate options
-    footprints.options = (function(opts){
+    (function(opts){
       if(typeof opts.endpointUrl == 'undefined'){
         throw LIB_NAME.toUpperCase() + ": you must pass the option endpointUrl";
       }
@@ -47,7 +43,7 @@ export function init(footprints){
       opts.errorCallback = opts.errorCallback || footprints.noop;
       opts.uniqueId = opts.uniqueId || ulid;
       return opts;
-    })(footprints.argv[3]);
+    })(footprints.options);
 
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
 
@@ -59,7 +55,6 @@ export function init(footprints){
     };
 
     // set a timer to process retries periodicaly
-    window = footprints.argv[0];
     window.setInterval(function(){
       if(typeof footprints.processQueue === 'function'){
         footprints.processQueues();
