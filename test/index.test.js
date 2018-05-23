@@ -149,7 +149,7 @@ describe("Footprints", function(){
       });
 
       it('sends a pageView when an action is enqueued', function(done){
-        fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' }, { name: '1 pageview' });
+        fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' });
         window.Footprints.argv[3].successCallback = function(response){
           expect(response.body).to.eql('{"eventId":"123"}')
           expect(response.status).to.eql(200);
@@ -245,12 +245,12 @@ describe("Footprints", function(){
       });
 
       it('retries several enqueued at once', function(done){
-        fetchMock.post('http://my.domain/analytics', { status: 401, body: '1'}, { overwriteRoutes: false, repeat: 1})
-        fetchMock.post('http://my.domain/analytics', { status: 401, body: '2'}, { overwriteRoutes: false, repeat: 1})
-        fetchMock.post('http://my.domain/analytics', { status: 500, body: '3'}, { overwriteRoutes: false, repeat: 1})
-        fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '4'}, { overwriteRoutes: false, repeat: 1});
-        fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '5'}, { overwriteRoutes: false, repeat: 1});
-        fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '6'}, { overwriteRoutes: false, repeat: 1});
+        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: 1})
+        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: 2})
+        fetchMock.post('http://my.domain/analytics', { status: 500 }, { overwriteRoutes: false, repeat: 1, name: 3})
+        fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: 4});
+        fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: 5});
+        fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: 6});
         var suc = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
           expect(JSON.parse(response.body).eventId).to.eql('123');
           expect(response.status).to.eql(200);
@@ -269,30 +269,56 @@ describe("Footprints", function(){
           window.Footprints.processQueues();
         }, 100);
       });
-    });
 
-    it('retries several enqueued at once', function(done){
-      fetchMock.post('http://my.domain/analytics', { status: 401, body: '1'}, { overwriteRoutes: false, repeat: 1})
-      fetchMock.post('http://my.domain/analytics', { status: 401, body: '2'}, { overwriteRoutes: false, repeat: 1})
-      fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '4'}, { overwriteRoutes: false, repeat: 1});
-      fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '5'}, { overwriteRoutes: false, repeat: 1});
-      fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '6'}, { overwriteRoutes: false, repeat: 1});
-      var suc = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
-        expect(JSON.parse(response.body).eventId).to.eql('123');
-        expect(response.status).to.eql(200);
-        if(suc.callCount == 3){
-          expect(err.callCount).to.eql(2)
-          expect(fetchMock.done()).to.be.true;
-          done();
-        }
+      it('retries with a mixture of sync and async', function(done){
+        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: '1'})
+        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: '2'})
+        fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: '3'});
+        fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: '4'});
+        fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: '5'});
+        var suc = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+          expect(JSON.parse(response.body).eventId).to.eql('123');
+          expect(response.status).to.eql(200);
+          if(suc.callCount == 3){
+            expect(err.callCount).to.eql(2)
+            expect(fetchMock.done()).to.be.true;
+            done();
+          }
+        });
+        var err = window.Footprints.argv[3].errorCallback = sinon.fake(function(error){});
+        init(window.Footprints);
+        window.Footprints.push('pageView', 1);
+        window.Footprints.push('pageView', 2);
+        setTimeout(function(){
+          window.Footprints.push('pageView', 3);
+        }, 100)
       });
-      var err = window.Footprints.argv[3].errorCallback = sinon.fake(function(error){});
-      init(window.Footprints);
-      window.Footprints.push('pageView', 1);
-      window.Footprints.push('pageView', 2);
-      setTimeout(function(){
-        window.Footprints.push('pageView', 3);
-      }, 100)
+
+      it('succeeds with scattered timing', function(done){
+        fetchMock.post('http://my.domain/analytics', { status: 401 });
+        var suc = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+          expect(response.status).to.eql(200);
+          if(suc.callCount == 7){
+            done();
+          }
+        });
+        var err = window.Footprints.argv[3].errorCallback = sinon.fake(function(error){});
+        init(window.Footprints);
+        window.Footprints.push('pageView', 1);
+        window.Footprints.push('pageView', 2);
+        setTimeout(function(){
+          window.Footprints.push('pageView', 3);
+          window.Footprints.push('pageView', 4);
+          setTimeout(function(){
+            window.Footprints.push('pageView', 5);
+            window.Footprints.push('pageView', 6);
+          }, 100)
+        }, 100)
+        setTimeout(function(){
+          fetchMock.post('http://my.domain/analytics', 200, { overwriteRoutes: true });
+          window.Footprints.push('pageView', 7);
+        }, 300)
+      });
     });
   });
 });
