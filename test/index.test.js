@@ -312,8 +312,25 @@ describe("Footprints", function(){
       });
 
       describe('user',function(done){
-        it('sends a pageView payload with the default format', function(){
-
+        it('sends a pageView payload with the default format', function(done){
+          fetchMock.postOnce(function(url, options){
+            return options.body ==
+              JSON.stringify({
+                pageTime: '2014-02-28T00:00:00.000Z',
+                eventTime: '2014-02-28T00:00:00.000Z',
+                eventId: '123abc',
+                eventName: 'pageView'
+               });
+          }, 200);
+          options.successCallback = function(response){
+            expect(response.status).to.eql(200);
+            done();
+          };
+          options.errorCallback = function(error){
+            done(error);
+          }
+          init(footprints);
+          footprints.push('pageView')
         });
       });
     });
