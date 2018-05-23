@@ -3,19 +3,7 @@
   <head>
     <title>Real News</title>
     <script>
-      (function(w,d,s,o){
-        var fp = w['Footprints']=w['Footprints']||{};
-        fp.pageTime=new Date();
-        fp.options = o;
-        fp.push = function(){
-          (fp.q = fp.q||[]).push([].slice.call(arguments))
-        };
-        var e=d.createElement('script');
-        e.async=1;
-        e.src=s;
-        var t=d.getElementsByTagName('script')[0];
-        t.parentNode.insertBefore(e,t);
-      })(window, document, '/dist/bundle.js', {
+      (function(w,d,s,o){ var fp = w['Footprints']=w['Footprints']||{}; fp.pageTime=new Date(); fp.options = o; fp.push = function(){ (fp.q = fp.q||[]).push([].slice.call(arguments)) }; var e=d.createElement('script'); e.async=1; e.src=s; var t=d.getElementsByTagName('script')[0]; t.parentNode.insertBefore(e,t); })(window, document, '/dist/bundle.js', {
         endpointUrl: 'http://localhost:3000/vapid/analytic_events/',
         intervalWait: 10000,
         debug: true

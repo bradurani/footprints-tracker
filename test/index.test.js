@@ -64,7 +64,7 @@ describe("Footprints", function(){
       })
       expect(options).to.contain({
         endpointUrl: 'http://my.domain/analytics',
-        intervalWait: 1000,
+        intervalWait: 5000,
         pageTime: '2014-02-28T00:00:00.000Z',
         debug: false,
         successCallback: footprints.noop,

@@ -9,7 +9,7 @@ var ulid = factory(prng);
 /* lint for semicolons */
 
 var LIB_NAME = 'Footprints';
-var DEFAULT_INTERVAL_WAIT = 1000;
+var DEFAULT_INTERVAL_WAIT = 5000;
 
 export function init(footprints){
 
