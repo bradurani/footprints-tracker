@@ -9,12 +9,10 @@
   "author": "Brad Urani",
   "scripts": {
     "build": "webpack --devtool source-map",
-    "test": "webpack test/index.test.js --config webpack.config-test.js && mocha dist/main.js --require source-map-support/register --require jsdom-global/register",
+    "test": "webpack test/index.test.js --config webpack.config-test.js && mocha dist/main.js --require source-map-support/register --require jsdom-global/register --require isomorphic-fetch",
     "dev": "webpack-dev-server --open --config webpack.config-dev.js"
   },
   "dependencies": {
-    "isomorphic-fetch": "^2.2.1",
-    "promise-polyfill": "7.1.2",
     "ulid": "^2.3.0"
   },
   "devDependencies": {
@@ -23,6 +21,7 @@
     "fetch-mock": "^6.4.2",
     "jsdom": "11.10.0",
     "jsdom-global": "^3.0.2",
+    "isomorphic-fetch": "^2.2.1",
     "mocha": "^5.2.0",
     "mockdate": "^2.0.2",
     "sinon": "^5.0.7",
