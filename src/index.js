@@ -124,7 +124,7 @@ export function init(footprints){
     var processOutputQueue = function() {
       trace("processing output queue");
       var payload;
-      while (payload = outputQueue.shift()) {
+      while (payload = outputQueue.pop()) {
         send(payload);
       }
     };
