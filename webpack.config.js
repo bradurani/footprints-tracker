@@ -5,11 +5,11 @@ module.exports = {
   entry: './src/index.js',
   target: 'web',
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: 'footprints.min.js',
+    path: path.resolve(__dirname, 'release')
   },
   plugins: [
-    new CleanWebpackPlugin(['dist'])
+    new CleanWebpackPlugin(['release'])
   ],
   mode: 'production'
 };

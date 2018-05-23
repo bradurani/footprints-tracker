@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/bradurani/footprints.svg?style=svg)](https://circleci.com/gh/bradurani/footprints)
+
 # Footprints
 
 Footprints is a browser analytics tracking library. It is used to track user
