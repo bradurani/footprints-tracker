@@ -170,11 +170,11 @@ export function init(footprints){
       pageView: function() {
         fire('pageView');
       },
-      user: function(userId, name, email) {
-        setBasePayload('userId', userId);
-        setBasePayload('name', name);
-        setBasePayload('email', email);
-      },
+      setContext: function(context) {
+        footprints.state.basePayload =
+          basePayload =
+          Object.assign(context, basePayload);
+      }
     };
 
     var trace = function() {

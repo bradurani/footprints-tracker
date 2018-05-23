@@ -320,7 +320,7 @@ describe("Footprints", function(){
                 eventTime: '2014-02-28T00:00:00.000Z',
                 eventId: '123abc',
                 eventName: 'pageView'
-               });
+              });
           }, 200);
           options.successCallback = function(response){
             expect(response.status).to.eql(200);
@@ -330,6 +330,42 @@ describe("Footprints", function(){
             done(error);
           }
           init(footprints);
+          footprints.push('pageView')
+        });
+      });
+
+      describe('user',function(done){
+        it('sends a pageView payload with the user attributes', function(done){
+          fetchMock.post(function(url, options){
+            return options.body ==
+              JSON.stringify(
+                { userId: 1,
+                  userName: 'Brad Urani',
+                  userEmail: 'bradurani@gmail.com',
+                  pageTime: '2014-02-28T00:00:00.000Z',
+                  eventTime: '2014-02-28T00:00:00.000Z',
+                  eventId: '123abc',
+                  eventName: 'pageView'
+                });
+          }, 200);
+          var s = options.successCallback = sinon.fake(function(response){
+            console.log('almist')
+            expect(response.status).to.eql(200);
+            if(s.callCount >= 3) {
+              done();
+            }
+          });
+          options.errorCallback = function(error){
+            done(error);
+          }
+          init(footprints);
+          footprints.push('setContext', {
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com'
+          });
+          footprints.push('pageView')
+          footprints.push('pageView')
           footprints.push('pageView')
         });
       });
