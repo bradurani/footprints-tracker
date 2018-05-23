@@ -4,6 +4,7 @@ import { init } from "../src/index.js"
 import MockDate from "MockDate";
 import sinon from "sinon";
 import fetchMock from 'fetch-mock';
+import { matchRequest } from './helper.js'
 
 describe("Footprints", function(){
   var window;
@@ -108,7 +109,7 @@ describe("Footprints", function(){
       var errorCallback;
 
       beforeEach(function(){
-        // options.debug = true;
+        options.debug = true;
         options.uniqueId = function(){
           return '123abc';
         }
@@ -334,22 +335,18 @@ describe("Footprints", function(){
         });
       });
 
-      describe('user',function(done){
+      describe('setContext',function(done){
         it('sends a pageView payload with the user attributes', function(done){
-          fetchMock.post(function(url, options){
-            return options.body ==
-              JSON.stringify(
-                { userId: 1,
-                  userName: 'Brad Urani',
-                  userEmail: 'bradurani@gmail.com',
-                  pageTime: '2014-02-28T00:00:00.000Z',
-                  eventTime: '2014-02-28T00:00:00.000Z',
-                  eventId: '123abc',
-                  eventName: 'pageView'
-                });
-          }, 200);
+          fetchMock.post(matchRequest('http://my.domain/analytics',
+            { pageTime: '2014-02-28T00:00:00.000Z',
+              userId: 1,
+              userName: 'Brad Urani',
+              userEmail: 'bradurani@gmail.com',
+              eventTime: '2014-02-28T00:00:00.000Z',
+              eventId: '123abc',
+              eventName: 'pageView'
+            }), 200);
           var s = options.successCallback = sinon.fake(function(response){
-            console.log('almist')
             expect(response.status).to.eql(200);
             if(s.callCount >= 3) {
               done();
@@ -367,6 +364,71 @@ describe("Footprints", function(){
           footprints.push('pageView')
           footprints.push('pageView')
           footprints.push('pageView')
+        });
+      });
+
+      describe('trackEvent',function(done){
+        it('sends a trackEvent with context', function(done){
+          fetchMock.post(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com',
+            key: 'project.directory.contact.created',
+            properties: { contact_name: 'Jane Doe' },
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: '123abc',
+            eventName: 'trackEvent'
+          }), 200, { name: 'created' });
+          fetchMock.post(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com',
+            key: 'project.directory.contact.updated',
+            properties: { contact_name: 'Jane Door', state: 'DE' },
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: '123abc',
+            eventName: 'trackEvent'
+          }), 200, { name: 'updated' });
+          fetchMock.post(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com',
+            key: 'project.directory.contact.deleted',
+            properties: { contact_name: 'Jane Door', state: 'DE' },
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: '123abc',
+            eventName: 'trackEvent'
+          }), 200, { name: 'deleted' });
+          var s = options.successCallback = sinon.fake(function(response){
+            expect(response.status).to.eql(200);
+            if(s.callCount >= 3) {
+              done();
+            }
+          });
+          options.errorCallback = function(error){
+            done(error);
+          }
+          init(footprints);
+          footprints.push('setContext', {
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com'
+          });
+          footprints.push('trackEvent', {
+            key: 'project.directory.contact.created',
+            properties: { contact_name: 'Jane Doe' }
+          });
+          footprints.push('trackEvent', {
+            key: 'project.directory.contact.updated',
+            properties: { contact_name: 'Jane Door', state: 'DE' }
+          });
+          footprints.push('trackEvent', {
+            key: 'project.directory.contact.deleted',
+            properties: { contact_name: 'Jane Door', state: 'DE' }
+          });
         });
       });
     });

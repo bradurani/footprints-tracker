@@ -109,12 +109,8 @@ export function init(footprints){
       }
     };
 
-    var setBasePayload = function(key, value){
-      basePayload[key] = value;
-    }
-
-    var fire = function(eventName) {
-      var payload = clone(basePayload);
+    var fire = function(eventName, properties ) {
+      var payload = clone(properties);
       payload['eventTime'] = new Date().toISOString();
       payload['eventId'] = uniqueId();
       payload['eventName'] = eventName;
@@ -128,7 +124,7 @@ export function init(footprints){
     var processOutputQueue = function() {
       trace("processing output queue");
       var payload;
-      while (payload = outputQueue.pop()) {
+      while (payload = outputQueue.shift()) {
         send(payload);
       }
     };
@@ -168,12 +164,15 @@ export function init(footprints){
 
     var actions = {
       pageView: function() {
-        fire('pageView');
+        fire('pageView', basePayload);
       },
       setContext: function(context) {
         footprints.state.basePayload =
           basePayload =
-          Object.assign(context, basePayload);
+          Object.assign(basePayload, context);
+      },
+      trackEvent: function(properties){
+        fire('trackEvent', Object.assign(basePayload, properties))
       }
     };
 

@@ -6,7 +6,7 @@
       (function(w,d,s,o){
         var fp = w['Footprints']=w['Footprints']||{};
         fp.pageTime=new Date();
-        fp.argv = arguments;
+        fp.options = o;
         fp.push = function(){
           (fp.q = fp.q||[]).push([].slice.call(arguments))
         };
@@ -15,19 +15,22 @@
         e.src=s;
         var t=d.getElementsByTagName('script')[0];
         t.parentNode.insertBefore(e,t);
-      })(window, document, 'dist/bundle.js', {
-        endpointUrl: 'http://localhost:8000/vapid/analytic_events/',
-        timerInterval: 1000,
+      })(window, document, '/dist/bundle.js', {
+        endpointUrl: 'http://localhost:3000/vapid/analytic_events/',
+        intervalWait: 10000,
         debug: true
       });
 
-      Footprints.push('user', 1, 'Brad Urani', 'bradurani@gmail.com');
+      Footprints.push('setContext', { userId: 1, userName: 'Brad Urani', userEmail: 'bradurani@gmail.com' });
       Footprints.push('pageView');
+      Footprints.push('trackEvent', { key: 'project.directory.contact.created', properties: {
+        contact_name: 'Jane Doe'
+      }});
 
     </script>
   </head>
   <body>
-    <h1>Real News</h1>
+    <h1>Lorem Ipsum</h1>
     <p>
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     </p>
