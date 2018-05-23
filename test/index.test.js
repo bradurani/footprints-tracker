@@ -132,6 +132,26 @@ describe("Footprints", function(){
         footprints.push('pageView')
       });
 
+      it('sends a pageView when an action is enqueued in the temp queue', function(done){
+        fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' });
+        options.successCallback = function(response){
+          expect(response.body).to.eql('{"eventId":"123"}')
+          expect(response.status).to.eql(200);
+          done();
+        };
+        options.errorCallback = function(error){
+          done(error);
+        }
+        // temp queue and push method set-up like the snippet
+        var fp = footprints;
+        fp.push = function(){
+          (fp.q = fp.q||[]).push([].slice.call(arguments))
+        };
+        window.Footprints.push('pageView');
+        init(footprints);
+        fp.processQueues();
+      });
+
       it('calls the error callback if the POST errors', function(done){
         fetchMock.postOnce('http://my.domain/analytics', 403);
         options.successCallback = function(response){

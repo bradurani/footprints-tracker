@@ -21,9 +21,17 @@ export function init(footprints){
 
   footprints.noop = function(){};
 
+  //utlities methods
+  var toArray = function(args) {
+    return [].slice.call(args);
+  };
+
+  var clone = function(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  };
+
   (function performSetup(){
 
-    // validate required optionss
     if (typeof footprints.options == 'undefined'){
       throw LIB_NAME.toUpperCase() + ": your snippet must set " +
         LIB_NAME + ".options to the options object";
@@ -42,23 +50,26 @@ export function init(footprints){
       opts.successCallback = opts.successCallback || footprints.noop;
       opts.errorCallback = opts.errorCallback || footprints.noop;
       opts.uniqueId = opts.uniqueId || ulid;
-      return opts;
     })(footprints.options);
 
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
+
+    var safeProcessQueues = function(){
+      if(typeof footprints.processQueues === 'function'){
+        footprints.processQueues();
+      }
+    }
 
     // replace the push method from the snippet with one
     // that calls processQueue so we don't have to wait for the timer
     footprints.push = function(){
       footprints.state.inputQueue.push(toArray(arguments));
-      footprints.processQueues();
+      safeProcessQueues();
     };
 
     // set a timer to process retries periodicaly
     window.setInterval(function(){
-      if(typeof footprints.processQueue === 'function'){
-        footprints.processQueues();
-      }
+      safeProcessQueues();
     }, footprints.options.intervalWait);
   })();
 
@@ -190,14 +201,6 @@ export function init(footprints){
     footprints.options.errorCallback,
     footprints.options.uniqueId
   );
-
-  var toArray = function(args) {
-    return [].slice.call(args);
-  };
-
-  var clone = function(obj) {
-    return JSON.parse(JSON.stringify(obj));
-  };
 }
 
 if(window[LIB_NAME]){
