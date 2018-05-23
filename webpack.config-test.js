@@ -8,6 +8,6 @@ module.exports = {
     devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]',
   },
   externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
-  devtool: "inline-cheap-module-source-map",
-  mode: 'production'
+  devtool: "source-map",
+  mode: 'production',
 };

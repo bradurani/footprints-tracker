@@ -138,6 +138,7 @@ describe("Footprints", function(){
       var errorCallback;
 
       beforeEach(function(){
+        fetchMock.reset();
         window.Footprints.argv[3].debug = true;
         window.Footprints.argv[3].uniqueId = function(){
           return '123abc';
@@ -245,7 +246,6 @@ describe("Footprints", function(){
       });
 
       it('retries several enqueued at once', function(done){
-        console.log('starting');
         fetchMock.post('http://my.domain/analytics', { status: 401, body: '1'}, { overwriteRoutes: false, repeat: 1})
         fetchMock.post('http://my.domain/analytics', { status: 401, body: '2'}, { overwriteRoutes: false, repeat: 1})
         fetchMock.post('http://my.domain/analytics', { status: 500, body: '3'}, { overwriteRoutes: false, repeat: 1})
@@ -270,6 +270,30 @@ describe("Footprints", function(){
           window.Footprints.processQueues();
         }, 100);
       });
+    });
+
+    it('retries several enqueued at once', function(done){
+      fetchMock.post('http://my.domain/analytics', { status: 401, body: '1'}, { overwriteRoutes: false, repeat: 1})
+      fetchMock.post('http://my.domain/analytics', { status: 401, body: '2'}, { overwriteRoutes: false, repeat: 1})
+      fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '4'}, { overwriteRoutes: false, repeat: 1});
+      fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '5'}, { overwriteRoutes: false, repeat: 1});
+      fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '6'}, { overwriteRoutes: false, repeat: 1});
+      var suc = window.Footprints.argv[3].successCallback = sinon.fake(function(response){
+        expect(JSON.parse(response.body).eventId).to.eql('123');
+        expect(response.status).to.eql(200);
+        if(suc.callCount == 3){
+          expect(err.callCount).to.eql(2)
+          expect(fetchMock.done()).to.be.true;
+          done();
+        }
+      });
+      var err = window.Footprints.argv[3].errorCallback = sinon.fake(function(error){});
+      init(window.Footprints);
+      window.Footprints.push('pageView', 1);
+      window.Footprints.push('pageView', 2);
+      setTimeout(function(){
+        window.Footprints.push('pageView', 3);
+      }, 100)
     });
   });
 });

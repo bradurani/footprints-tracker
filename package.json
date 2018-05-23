@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "webpack --mode development --watch",
     "build": "webpack --devtool source-map --mode production",
-    "test": "webpack test/index.test.js --config webpack.config-test.js && mocha dist/main.js"
+    "test": "webpack test/index.test.js --config webpack.config-test.js && mocha dist/main.js --require source-map-support/register"
   },
   "dependencies": {
     "isomorphic-fetch": "^2.2.1",
