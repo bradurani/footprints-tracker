@@ -106,7 +106,7 @@ The snippet arguments are `window`, `documents`, `scriptUrl`, `options`
 `window`: the current window  
 `document`: the current document  
 `scriptUrl`: the url of where the footprints script is located  
-'options':
+`options`:
   - `endpointURL`: the http or https endpoint where the analytic events will be
     POSTed to ***(required)***
   - `debug`: Enables debug output in the console if set to `true`
