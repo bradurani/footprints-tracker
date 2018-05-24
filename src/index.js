@@ -170,8 +170,8 @@ export function init(footprints){
           basePayload =
           Object.assign(basePayload, context);
       },
-      trackEvent: function(properties){
-        fire('trackEvent', Object.assign(basePayload, properties))
+      track: function(properties){
+        fire('track', Object.assign(basePayload, properties))
       }
     };
 

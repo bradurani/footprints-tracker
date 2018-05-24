@@ -388,8 +388,8 @@ describe("Footprints", function(){
         });
       });
 
-      describe('trackEvent',function(done){
-        it('sends a trackEvent with context', function(done){
+      describe('track',function(done){
+        it('sends a track with context', function(done){
           fetchMock.post(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
             pageId: 'abc123',
@@ -400,7 +400,7 @@ describe("Footprints", function(){
             properties: { contact_name: 'Jane Doe' },
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'trackEvent'
+            eventName: 'track'
           }), 200, { name: 'created' });
           fetchMock.post(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
@@ -412,7 +412,7 @@ describe("Footprints", function(){
             properties: { contact_name: 'Jane Door', state: 'DE' },
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'trackEvent'
+            eventName: 'track'
           }), 200, { name: 'updated' });
           fetchMock.post(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
@@ -424,7 +424,7 @@ describe("Footprints", function(){
             properties: { contact_name: 'Jane Door', state: 'DE' },
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'trackEvent'
+            eventName: 'track'
           }), 200, { name: 'deleted' });
           var s = options.successCallback = sinon.fake(function(response){
             expect(response.status).to.eql(200);
@@ -441,15 +441,15 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com'
           });
-          footprints.push('trackEvent', {
+          footprints.push('track', {
             key: 'project.directory.contact.created',
             properties: { contact_name: 'Jane Doe' }
           });
-          footprints.push('trackEvent', {
+          footprints.push('track', {
             key: 'project.directory.contact.updated',
             properties: { contact_name: 'Jane Door', state: 'DE' }
           });
-          footprints.push('trackEvent', {
+          footprints.push('track', {
             key: 'project.directory.contact.deleted',
             properties: { contact_name: 'Jane Door', state: 'DE' }
           });
