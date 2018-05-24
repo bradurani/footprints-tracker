@@ -163,7 +163,7 @@ export function init(footprints){
 
     var actions = {
       pageView: function(name, properties) {
-        var props = Object.assign(basePayload, properties);
+        var props = Object.assign(basePayload, properties, pageProps());
         if(name){
           props['name'] = name;
         }
@@ -178,6 +178,19 @@ export function init(footprints){
         fire('track', Object.assign(basePayload, properties))
       }
     };
+
+    var pageProps = function(){
+      var pageProps = {};
+      try {
+        pageProps.url = window.location.href;
+        pageProps.path = window.location.path;
+        pageProps.referer = document.referer;
+        pageProps.title = document.title;
+      } catch(e){
+        console.error('could not get page props', e);
+      }
+      return pageProps;
+    }
 
     var trace = function() {
       if (debug) {

@@ -12,6 +12,9 @@ describe("Footprints", function(){
 
   beforeEach(function(){
     window = global.window;
+    document.referer = 'http://bar.com';
+    document.title = 'Happy Web Page';
+    window.location.path = '/foo';
     footprints = window.Footprints = {};
     window.setInterval = sinon.fake();
     MockDate.set('2014-02-28T00:00:00.000Z');
@@ -182,6 +185,10 @@ describe("Footprints", function(){
           expect(footprints.state.outputQueue).to.eql([{
             eventName: 'pageView',
             pageId: 'abc123',
+            url: window.location.href,
+            path: window.location.path,
+            referer: document.referer,
+            title: document.title,
             pageTime: '2014-02-28T00:00:00.000Z',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123'
@@ -220,6 +227,10 @@ describe("Footprints", function(){
             eventName: 'pageView',
             pageTime: '2014-02-28T00:00:00.000Z',
             pageId: 'abc123',
+            url: window.location.href,
+            path: window.location.path,
+            referer: document.referer,
+            title: document.title,
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123'
           }]);
@@ -339,9 +350,13 @@ describe("Footprints", function(){
           fetchMock.postOnce(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
             pageId: 'abc123',
+            url: window.location.href,
+            path: window.location.path,
+            referer: document.referer,
+            title: document.title,
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'pageView'
+            eventName: 'pageView',
           }), 200);
           options.successCallback = function(response){
             expect(response.status).to.eql(200);
@@ -358,6 +373,10 @@ describe("Footprints", function(){
           fetchMock.postOnce(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
             pageId: 'abc123',
+            url: window.location.href,
+            path: window.location.path,
+            referer: document.referer,
+            title: document.title,
             name: 'Toonspeak',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
@@ -375,6 +394,31 @@ describe("Footprints", function(){
         });
       });
 
+      it('sends a pageView with name and properties', function(done){
+        fetchMock.postOnce(matchRequest('http://my.domain/analytics', {
+          pageTime: '2014-02-28T00:00:00.000Z',
+          pageId: 'abc123',
+          category: 'clothing',
+          url: window.location.href,
+          path: window.location.path,
+          referer: document.referer,
+          title: document.title,
+          name: 'Toonspeak',
+          eventTime: '2014-02-28T00:00:00.000Z',
+          eventId: 'abc123',
+          eventName: 'pageView'
+        }), 200);
+        options.successCallback = function(response){
+          expect(response.status).to.eql(200);
+          done();
+        };
+        options.errorCallback = function(error){
+          done(error);
+        }
+        init(footprints);
+        footprints.push('pageView', 'Toonspeak', { category: 'clothing' });
+      });
+
       describe('context',function(done){
         it('sends a pageView payload with the user attributes', function(done){
           fetchMock.post(matchRequest('http://my.domain/analytics', {
@@ -383,6 +427,10 @@ describe("Footprints", function(){
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
+            url: window.location.href,
+            path: window.location.path,
+            referer: document.referer,
+            title: document.title,
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
             eventName: 'pageView'
