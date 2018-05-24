@@ -165,7 +165,7 @@ export function init(footprints){
       pageView: function() {
         fire('pageView', basePayload);
       },
-      setContext: function(context) {
+      context: function(context) {
         footprints.state.basePayload =
           basePayload =
           Object.assign(basePayload, context);

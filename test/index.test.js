@@ -355,7 +355,7 @@ describe("Footprints", function(){
         });
       });
 
-      describe('setContext',function(done){
+      describe('context',function(done){
         it('sends a pageView payload with the user attributes', function(done){
           fetchMock.post(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
@@ -377,7 +377,7 @@ describe("Footprints", function(){
             done(error);
           }
           init(footprints);
-          footprints.push('setContext', {
+          footprints.push('context', {
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com'
@@ -436,7 +436,7 @@ describe("Footprints", function(){
             done(error);
           }
           init(footprints);
-          footprints.push('setContext', {
+          footprints.push('context', {
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com'
