@@ -7,6 +7,7 @@ var ulid = factory(prng);
 
 var LIB_NAME = 'Footprints';
 var DEFAULT_INTERVAL_WAIT = 5000;
+var PAUSE_TIME = 100;
 
 export function init(footprints){
   if(footprints.initialized){
@@ -82,12 +83,12 @@ export function init(footprints){
     inputQueue,
     outputQueue,
     basePayload,
-    debug,
     endpointUrl,
     successCallback,
     errorCallback,
     uniqueIdFunc,
-    readyCallback
+    readyCallback,
+    debug
   ) {
 
     var processQueues = footprints.processQueues = function(){
@@ -96,7 +97,7 @@ export function init(footprints){
     }
 
     var processInputQueue = function() {
-      trace("processing input queue");
+      trace("processing input queue", inputQueue);
       var cmd;
       var actionName;
       while (cmd = inputQueue.shift()) {
@@ -174,23 +175,11 @@ export function init(footprints){
 
     var actions = {
       pageView: function(name, properties) {
-        var props = Object.assign(basePayload, properties, pageProps());
+        var props = Object.assign({}, basePayload, properties, pageProps());
         if(name){
           props['name'] = name;
         }
         fire('pageView', props);
-      },
-      context: function(context) {
-        footprints.state.basePayload =
-          basePayload =
-          Object.assign(basePayload, context);
-      },
-      track: function(key, properties){
-        var props = Object.assign(basePayload, properties);
-        if(key){
-          props['key'] = key;
-        }
-        fire('track', props);
       },
       user: function(idOrProperties, properties){
         var props = Object.assign({}, properties);
@@ -200,6 +189,18 @@ export function init(footprints){
           props['userId'] = idOrProperties;
         }
         actions.context(props);
+      },
+      track: function(key, properties){
+        var props = Object.assign(basePayload, properties);
+        if(key){
+          props['key'] = key;
+        }
+        fire('track', props);
+      },
+      context: function(context) {
+        footprints.state.basePayload =
+          basePayload =
+          Object.assign(basePayload, context);
       }
     };
 
@@ -236,12 +237,14 @@ export function init(footprints){
     (function(){
       for (var action in actions) {
         if (actions.hasOwnProperty(action)) {
-          footprints[action] = function(){
-            var args = toArray(arguments);
-            args.unshift(action);
-            enqueueInput(args);
-            processQueues();
-          }
+          footprints[action] = (function(methodName){
+            return function(){
+              var args = toArray(arguments);
+              args.unshift(methodName);
+              enqueueInput(args);
+              processQueues();
+            };
+          })(action);
         }
       }
     })();
@@ -249,16 +252,15 @@ export function init(footprints){
     //start so we don't have to wait for the first interval
     readyCallback();
     processQueues();
-
   })(footprints.state.inputQueue,
     footprints.state.outputQueue,
     footprints.state.basePayload,
-    footprints.options.debug,
     footprints.options.endpointUrl,
     footprints.options.successCallback,
     footprints.options.errorCallback,
     footprints.options.uniqueIdFunc,
-    footprints.options.readyCallback
+    footprints.options.readyCallback,
+    footprints.options.debug
   );
 }
 

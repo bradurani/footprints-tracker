@@ -24,7 +24,7 @@
   "scripts": {
     "build": "webpack --devtool source-map",
     "test": "webpack test/index.test.js --config webpack.config-test.js && mocha dist/main.js --require source-map-support/register --require jsdom-global/register --require isomorphic-fetch",
-    "dev": "webpack-dev-server --open --config webpack.config-dev.js"
+    "start": "webpack-dev-server --open --config webpack.config-dev.js"
   },
   "dependencies": {
     "ulid": "^2.3.0"

@@ -138,7 +138,7 @@ describe("Footprints", function(){
     });
 
     it('calls the readyCallback after init', function(done){
-      var r = options.readyCallback = function(){
+      options.readyCallback = function(){
         done();
       }
       init(footprints);
@@ -474,7 +474,7 @@ describe("Footprints", function(){
 
       describe('user', function(){
         it('sends a track with user', function(done){
-          fetchMock.post(matchRequest('http://my.domain/analytics', {
+          fetchMock.postOnce(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
             pageId: 'abc123',
             userName: 'Brad Urani',
@@ -503,7 +503,7 @@ describe("Footprints", function(){
         })
 
         it('sends a track with user with id', function(done){
-          fetchMock.post(matchRequest('http://my.domain/analytics', {
+          fetchMock.postOnce(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
             pageId: 'abc123',
             userName: 'Brad Urani',
@@ -531,69 +531,69 @@ describe("Footprints", function(){
             properties: { contact_name: 'Jane Doe' }
           });
         })
+      });
 
-        describe('track',function(done){
-          it('sends a track with context', function(done){
-            fetchMock.post(matchRequest('http://my.domain/analytics', {
-              pageTime: '2014-02-28T00:00:00.000Z',
-              pageId: 'abc123',
-              userId: 1,
-              userName: 'Brad Urani',
-              userEmail: 'bradurani@gmail.com',
-              properties: { contact_name: 'Jane Doe' },
-              key: 'project.directory.contact.created',
-              eventTime: '2014-02-28T00:00:00.000Z',
-              eventId: 'abc123',
-              eventName: 'track'
-            }), 200, { name: 'created' });
-            fetchMock.post(matchRequest('http://my.domain/analytics', {
-              pageTime: '2014-02-28T00:00:00.000Z',
-              pageId: 'abc123',
-              userId: 1,
-              userName: 'Brad Urani',
-              userEmail: 'bradurani@gmail.com',
-              properties: { contact_name: 'Jane Door', state: 'DE' },
-              key: 'project.directory.contact.updated',
-              eventTime: '2014-02-28T00:00:00.000Z',
-              eventId: 'abc123',
-              eventName: 'track'
-            }), 200, { name: 'updated' });
-            fetchMock.post(matchRequest('http://my.domain/analytics', {
-              pageTime: '2014-02-28T00:00:00.000Z',
-              pageId: 'abc123',
-              userId: 1,
-              userName: 'Brad Urani',
-              userEmail: 'bradurani@gmail.com',
-              properties: { contact_name: 'Jane Door', state: 'DE' },
-              key: 'project.directory.contact.deleted',
-              eventTime: '2014-02-28T00:00:00.000Z',
-              eventId: 'abc123',
-              eventName: 'track'
-            }), 200, { name: 'deleted' });
-            var s = options.successCallback = sinon.fake(function(response){
-              expect(response.status).to.eql(200);
-              if(s.callCount >= 3) {
-                done();
-              }
-            });
-            options.errorCallback = function(error){
-              done(error);
+      describe('track',function(done){
+        it('sends a track with context', function(done){
+          fetchMock.post(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com',
+            properties: { contact_name: 'Jane Doe' },
+            key: 'project.directory.contact.created',
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: 'abc123',
+            eventName: 'track'
+          }), 200, { name: 'created' });
+          fetchMock.post(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com',
+            properties: { contact_name: 'Jane Door', state: 'DE' },
+            key: 'project.directory.contact.updated',
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: 'abc123',
+            eventName: 'track'
+          }), 200, { name: 'updated' });
+          fetchMock.post(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com',
+            properties: { contact_name: 'Jane Door', state: 'DE' },
+            key: 'project.directory.contact.deleted',
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: 'abc123',
+            eventName: 'track'
+          }), 200, { name: 'deleted' });
+          var s = options.successCallback = sinon.fake(function(response){
+            expect(response.status).to.eql(200);
+            if(s.callCount >= 3) {
+              done();
             }
-            init(footprints);
-            footprints.push('context', {
-              userId: 1,
-              userName: 'Brad Urani',
-              userEmail: 'bradurani@gmail.com'
-            });
-            footprints.push('track', 'project.directory.contact.created', {
-              properties: { contact_name: 'Jane Doe' }
-            });
-            footprints.push('track', 'project.directory.contact.updated', {
-              properties: { contact_name: 'Jane Door', state: 'DE' }
-            });
-            footprints.push('track', 'project.directory.contact.deleted', {
-              properties: { contact_name: 'Jane Door', state: 'DE' }
-            });
+          });
+          options.errorCallback = function(error){
+            done(error);
+          }
+          init(footprints);
+          footprints.push('context', {
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com'
+          });
+          footprints.push('track', 'project.directory.contact.created', {
+            properties: { contact_name: 'Jane Doe' }
+          });
+          footprints.push('track', 'project.directory.contact.updated', {
+            properties: { contact_name: 'Jane Door', state: 'DE' }
+          });
+          footprints.push('track', 'project.directory.contact.deleted', {
+            properties: { contact_name: 'Jane Door', state: 'DE' }
           });
         });
       });
