@@ -48,17 +48,17 @@ This will be the same for all events sent from the same page.
 **title**: The title of the page  
 **url**: the url of the page  
 
-**User Identification**
+## User Identification
 
-***For a known user***
-```
+**For a known user**
+```javascript
 Footprints.user('123abc', { email: 'jane@doe.com' });
 ```
 The first argument is the user's unique id from your system. The properties in the object 
 passed as the 2nd argument will be added to every subsequent event (`pageView`, `track`, etc.)
 
 **For an unknown user**
-```
+```javascript
 Footprints.user({ visitedSignUpPage: true });
 ```
 All properties will be passed to every subsequent event (`pageView`, `track`, etc. )
@@ -70,13 +70,13 @@ before calling `Footprints.pageView()`.
 
 You can set additional properties that will be sent on every event.
 
-```
+```javascript
 Footprints.user('12', { name: 'Brad Urani' })
 Footprints.context({ pageType: 'shopping', collection: 'Fall 2018' }),
 Footprints.pageView();
 ```
 will create a POST with the following body:
-```
+```javascript
 {
   "collection": "Fall 2018",
   "eventId": "01CE9ZV5F5C8HYQ741YFJ5TNX0",
@@ -91,7 +91,6 @@ will create a POST with the following body:
   "userId": "12"
 }
 ```
-
 
 ## Development
 
