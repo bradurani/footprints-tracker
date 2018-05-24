@@ -52,6 +52,7 @@ export function init(footprints){
       opts.successCallback = opts.successCallback || footprints.noop;
       opts.errorCallback = opts.errorCallback || footprints.noop;
       opts.uniqueIdFunc = opts.uniqueIdFunc || ulid;
+      opts.readyCallback = opts.readyCallback || footprints.noop;
       opts.pageId = opts.pageId || opts.uniqueIdFunc();
     })(footprints.options);
 
@@ -85,7 +86,8 @@ export function init(footprints){
     endpointUrl,
     successCallback,
     errorCallback,
-    uniqueIdFunc
+    uniqueIdFunc,
+    readyCallback
   ) {
 
     var processQueues = footprints.processQueues = function(){
@@ -244,6 +246,10 @@ export function init(footprints){
       }
     })();
 
+    //start so we don't have to wait for the first interval
+    readyCallback();
+    processQueues();
+
   })(footprints.state.inputQueue,
     footprints.state.outputQueue,
     footprints.state.basePayload,
@@ -251,7 +257,8 @@ export function init(footprints){
     footprints.options.endpointUrl,
     footprints.options.successCallback,
     footprints.options.errorCallback,
-    footprints.options.uniqueIdFunc
+    footprints.options.uniqueIdFunc,
+    footprints.options.readyCallback
   );
 }
 

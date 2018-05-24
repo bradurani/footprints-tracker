@@ -64,7 +64,7 @@ describe("Footprints", function(){
     });
 
     it('initializes with empty state', function(){
-      options.uniqueIdFunc = function(){ return '111'; };
+      var uid = options.uniqueIdFunc = function(){ return '111'; };
       init(footprints);
       expect(footprints.state).to.eql({
         basePayload: {
@@ -74,13 +74,15 @@ describe("Footprints", function(){
         inputQueue: [],
         outputQueue: []
       })
-      expect(options).to.contain({
+      expect(options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 5000,
         pageTime: '2014-02-28T00:00:00.000Z',
         pageId: '111',
         debug: false,
+        readyCallback: footprints.noop,
         successCallback: footprints.noop,
+        uniqueIdFunc: uid,
         errorCallback: footprints.noop,
       });
       expect(footprints.state.basePayload).to.eql({
@@ -112,6 +114,7 @@ describe("Footprints", function(){
         debug: true,
         successCallback: footprints.noop,
         errorCallback: footprints.noop,
+        readyCallback: footprints.noop,
         uniqueIdFunc: uid
       });
       expect(footprints.state.basePayload).to.eql({
@@ -124,7 +127,7 @@ describe("Footprints", function(){
     it('copy footprints.q to state.inputQueue', function(){
       footprints.q = [['pageView']]
       init(footprints);
-      expect(footprints.state.inputQueue).to.eql([['pageView']]);
+      expect(footprints.state.inputQueue).to.equal(footprints.q);
     });
 
     it('overwrites footprints.push with a new version', function(){
@@ -132,6 +135,13 @@ describe("Footprints", function(){
       init(footprints);
       expect(footprints.push).to.be.a('function');
       expect(footprints.push).not.to.equal(f);
+    });
+
+    it('calls the readyCallback after init', function(done){
+      var r = options.readyCallback = function(){
+        done();
+      }
+      init(footprints);
     });
 
     describe('with xhr', function(){
@@ -163,7 +173,7 @@ describe("Footprints", function(){
         footprints.push('pageView')
       });
 
-      it('sends a pageView when an action is enqueued in the temp queue', function(done){
+      it('sends pageView on init when action is enqueued in the temp queue', function(done){
         fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' });
         options.successCallback = function(response){
           expect(response.body).to.eql('{"eventId":"123"}')
@@ -180,7 +190,6 @@ describe("Footprints", function(){
         };
         window.Footprints.push('pageView');
         init(footprints);
-        fp.processQueues();
       });
 
       it('calls the error callback if the POST errors', function(done){
