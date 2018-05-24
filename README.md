@@ -48,6 +48,51 @@ This will be the same for all events sent from the same page.
 **title**: The title of the page  
 **url**: the url of the page  
 
+**User Identification**
+
+***For a known user***
+```
+Footprints.user('123abc', { email: 'jane@doe.com' });
+```
+The first argument is the user's unique id from your system. The properties in the object 
+passed as the 2nd argument will be added to every subsequent event (`pageView`, `track`, etc.)
+
+**For an unknown user**
+```
+Footprints.user({ visitedSignUpPage: true });
+```
+All properties will be passed to every subsequent event (`pageView`, `track`, etc. )
+
+`Footprints.user` itself does not send any events to the server, so you should call it
+before calling `Footprints.pageView()`.
+
+**Setting Additional Context**
+
+You can set additional properties that will be sent on every event.
+
+```
+Footprints.user('12', { name: 'Brad Urani' })
+Footprints.context({ pageType: 'shopping', collection: 'Fall 2018' }),
+Footprints.pageView();
+```
+will create a POST with the following body:
+```
+{
+  "collection": "Fall 2018",
+  "eventId": "01CE9ZV5F5C8HYQ741YFJ5TNX0",
+  "eventName": "pageView",
+  "eventTime": "2018-05-24T21:10:59.813Z",
+  "name": "Brad Urani",
+  "pageId": "01CE9ZV5F47EDX0HHRG7NS4VQ9",
+  "pageTime": "2018-05-24T21:10:59.812Z",
+  "pageType": "shopping",
+  "title": "Real News",
+  "url": "http://localhost:8000/",
+  "userId": "12"
+}
+```
+
+
 ## Development
 
 Install [npm](https://www.npmjs.com/get-npm) and run
