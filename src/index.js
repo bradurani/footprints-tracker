@@ -174,8 +174,12 @@ export function init(footprints){
           basePayload =
           Object.assign(basePayload, context);
       },
-      track: function(properties){
-        fire('track', Object.assign(basePayload, properties))
+      track: function(key, properties){
+        var props = Object.assign(basePayload, properties);
+        if(key){
+          props['key'] = key;
+        }
+        fire('track', props);
       }
     };
 

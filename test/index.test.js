@@ -464,8 +464,8 @@ describe("Footprints", function(){
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
-            key: 'project.directory.contact.created',
             properties: { contact_name: 'Jane Doe' },
+            key: 'project.directory.contact.created',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
             eventName: 'track'
@@ -476,8 +476,8 @@ describe("Footprints", function(){
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
-            key: 'project.directory.contact.updated',
             properties: { contact_name: 'Jane Door', state: 'DE' },
+            key: 'project.directory.contact.updated',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
             eventName: 'track'
@@ -488,8 +488,8 @@ describe("Footprints", function(){
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
-            key: 'project.directory.contact.deleted',
             properties: { contact_name: 'Jane Door', state: 'DE' },
+            key: 'project.directory.contact.deleted',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
             eventName: 'track'
@@ -509,16 +509,13 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com'
           });
-          footprints.push('track', {
-            key: 'project.directory.contact.created',
+          footprints.push('track', 'project.directory.contact.created', {
             properties: { contact_name: 'Jane Doe' }
           });
-          footprints.push('track', {
-            key: 'project.directory.contact.updated',
+          footprints.push('track', 'project.directory.contact.updated', {
             properties: { contact_name: 'Jane Door', state: 'DE' }
           });
-          footprints.push('track', {
-            key: 'project.directory.contact.deleted',
+          footprints.push('track', 'project.directory.contact.deleted', {
             properties: { contact_name: 'Jane Door', state: 'DE' }
           });
         });
