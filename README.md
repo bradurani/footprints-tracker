@@ -123,10 +123,6 @@ The snippet arguments are `window`, `documents`, `scriptUrl`, `options`
   - `uniqueIdFunc`: used to provide a function that creates a uniqueId, if you
     want to use something other than ulids
 
-```
-
-```
-
 ## Development
 
 Install [npm](https://www.npmjs.com/get-npm) and run
