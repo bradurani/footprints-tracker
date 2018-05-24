@@ -113,7 +113,7 @@ export function init(footprints){
       }
     };
 
-    var fire = function(eventName, properties ) {
+    var fire = function(eventName, properties) {
       var payload = clone(properties);
       payload['eventTime'] = new Date().toISOString();
       payload['eventId'] = uniqueIdFunc();
@@ -121,9 +121,13 @@ export function init(footprints){
       enqueueOutput(payload);
     };
 
+    var enqueueInput = function(payload){
+      inputQueue.push(payload);
+    };
+
     var enqueueOutput = function(payload) {
       outputQueue.push(payload);
-    }
+    };
 
     var processOutputQueue = function() {
       trace("processing output queue");
@@ -205,7 +209,7 @@ export function init(footprints){
         pageProps.referer = document.referer;
         pageProps.title = document.title;
       } catch(e){
-        console.error('could not get page props', e);
+        error('could not get page props', e);
       }
       return pageProps;
     }
