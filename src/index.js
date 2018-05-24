@@ -9,6 +9,11 @@ var LIB_NAME = 'Footprints';
 var DEFAULT_INTERVAL_WAIT = 5000;
 
 export function init(footprints){
+  if(footprints.initialized){
+    console.error('Footprints already initialized');
+    return;
+  }
+  footprints.initialized = true;
 
   footprints.state = {
     basePayload: {},
@@ -180,6 +185,15 @@ export function init(footprints){
           props['key'] = key;
         }
         fire('track', props);
+      },
+      user: function(idOrProperties, properties){
+        var props = Object.assign({}, properties);
+        if(typeof idOrProperties === 'object'){
+          props = Object.assign(props, idOrProperties);
+        } else if(idOrProperties){
+          props['userId'] = idOrProperties;
+        }
+        actions.context(props);
       }
     };
 
@@ -211,6 +225,21 @@ export function init(footprints){
         console.error.apply(this, args);
       }
     };
+
+    //add all actions to Footprints as methods in case the snippet did not
+    (function(){
+      for (var action in actions) {
+        if (actions.hasOwnProperty(action)) {
+          footprints[action] = function(){
+            var args = toArray(arguments);
+            args.unshift(action);
+            enqueueInput(args);
+            processQueues();
+          }
+        }
+      }
+    })();
+
   })(footprints.state.inputQueue,
     footprints.state.outputQueue,
     footprints.state.basePayload,
