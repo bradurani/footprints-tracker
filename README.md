@@ -10,7 +10,7 @@ for failed sends and a persistent context for identifying users and other state.
 ## Installation
 
 Add the following snippet to your page in the `<head>` element.
-```
+```javascript
 <script type='text/javascript'>
   !(function(w,d,s,o){var fp=w.Footprints=w.Footprints||{};fp.q=fp.q||[];if(fp.initialized||fp.invoked) return;fp.invoked=true;fp.pageTime=new Date();fp.options = o;var m=['user','pageView','track','debug','once','off','on','ready','reset','context'];var pf=function(k){return function(){var a=[].slice.call(arguments);a.unshift(k);fp.q.push(a);}};for(var i=0;i<m.length;i++){fp[m[i]]=pf(m[i]);}var e=d.createElement('script');e.async=1;e.src=s;var t=d.getElementsByTagName('script')[0];t.parentNode.insertBefore(e,t);}
   )(window, document, '<URL OF footprints.min.js ON YOUR SERVER OR CDN>', {
@@ -24,12 +24,12 @@ Add the following snippet to your page in the `<head>` element.
 ## Tracking Events
 
 To track a user event, call
-```
+```javascript
 Footprints.track('Photo Uploaded');
 ```
 This will cause a POST with a body like the following to be sent to your
 endpoint
-```
+```javascript
 {
   "pageTime": "2018-05-24T20:30:54.425Z",
   "pageId": "01CE9XHRESP6ZZ3AH8HAD3HXE3",
@@ -39,24 +39,24 @@ endpoint
   "key": "Photo Uploaded"
 }
 ```
-**pageTime**: The time the page loaded in the browser
-**pageId**: a [ulid](https://www.npmjs.com/package/ulid) representing the page.
-This will be the same for all events sent from the same page.
-**eventId**: a [ulid](https://www.npmjs.com/package/ulid) unique to this event
-**eventName**: The type of event being sent
-**key**: A name identifying the action the user has taken
-**title**: The title of the page
-**url**: the url of the page
-```
+**pageTime**: The time the page loaded in the browser  
+**pageId**: a [ulid](https://www.npmjs.com/package/ulid) representing the page.  
+This will be the same for all events sent from the same page.  
+**eventId**: a [ulid](https://www.npmjs.com/package/ulid) unique to this event  
+**eventName**: The type of event being sent  
+**key**: A name identifying the action the user has taken  
+**title**: The title of the page  
+**url**: the url of the page  
 
 ## Development
+
 Install [npm](https://www.npmjs.com/get-npm) and run
-```
+```bash
 npm install
 ```
 
 Start the webpack dev server
-```
+```bash
 npm start
 ```
 and navigate to `localhost:8000`
