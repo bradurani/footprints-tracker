@@ -334,7 +334,7 @@ describe("Footprints", function(){
         }, 300);
       });
 
-      describe('user',function(done){
+      describe('pageView', function(){
         it('sends a pageView payload with the default format', function(done){
           fetchMock.postOnce(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
@@ -352,6 +352,26 @@ describe("Footprints", function(){
           }
           init(footprints);
           footprints.push('pageView')
+        });
+
+        it('sends a pageView with name', function(done){
+          fetchMock.postOnce(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
+            name: 'Toonspeak',
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: 'abc123',
+            eventName: 'pageView',
+          }), 200);
+          options.successCallback = function(response){
+            expect(response.status).to.eql(200);
+            done();
+          };
+          options.errorCallback = function(error){
+            done(error);
+          }
+          init(footprints);
+          footprints.push('pageView', 'Toonspeak');
         });
       });
 

@@ -162,8 +162,12 @@ export function init(footprints){
     };
 
     var actions = {
-      pageView: function() {
-        fire('pageView', basePayload);
+      pageView: function(name, properties) {
+        var props = Object.assign(basePayload, properties);
+        if(name){
+          props['name'] = name;
+        }
+        fire('pageView', props);
       },
       context: function(context) {
         footprints.state.basePayload =
