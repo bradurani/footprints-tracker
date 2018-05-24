@@ -66,7 +66,7 @@ All properties will be passed to every subsequent event (`pageView`, `track`, et
 `Footprints.user` itself does not send any events to the server, so you should call it
 before calling `Footprints.pageView()`.
 
-**Setting Additional Context**
+## Setting Additional Context
 
 You can set additional properties that will be sent on every event.
 
@@ -90,6 +90,41 @@ will create a POST with the following body:
   "url": "http://localhost:8000/",
   "userId": "12"
 }
+```
+
+## Snippet arguments
+
+The snippet arguments are `window`, `documents`, `scriptUrl`, `options`
+
+```javascript
+<script type='text/javascript'>
+  !(function(w,d,s,o){var fp=w.Footprints=w.Footprints||{};fp.q=fp.q||[];if(fp.initialized||fp.invoked) return;fp.invoked=true;fp.pageTime=new Date();fp.options = o;var m=['user','pageView','track','debug','once','off','on','ready','reset','context'];var pf=function(k){return function(){var a=[].slice.call(arguments);a.unshift(k);fp.q.push(a);}};for(var i=0;i<m.length;i++){fp[m[i]]=pf(m[i]);}var e=d.createElement('script');e.async=1;e.src=s;var t=d.getElementsByTagName('script')[0];t.parentNode.insertBefore(e,t);}
+ )(window, document, scriptUrl, options);
+ </script>
+ ```
+
+`window`: the current window
+`document`: the current document
+`scriptUrl`: the url of where the footprints script is located
+'options':
+  - `endpointURL`: the http or https endpoint where the analytic events will be
+    POSTed to ***(required)***
+  - `debug`: Enables debug output in the console if set to `true`
+  - `intervalWait`: the interval at which the script retries failed events
+    (default: 5000)
+  - `pageId`: overrides the automatically generated pageId ulid
+  - `pageTime`: override the automatically generated pageTime
+  - `successCallback`: used to provide a function that is called every time an
+    event is successfully seng
+  - `errorCallback`: used to provide a function that is called every time an
+    event send fails
+  - `readyCallback`: used to provide a function that is called when the
+    footprints script is finished loading
+  - `uniqueIdFunc`: used to provide a function that creates a uniqueId, if you
+    want to use something other than ulids
+
+```
+
 ```
 
 ## Development
@@ -117,3 +152,4 @@ and navigate to `localhost:8000`
 - Ability to disable the retry timer
 - beforeSend callback for transforming the POST body
 - Event batching
+- Snippet version
