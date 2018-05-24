@@ -1,11 +1,8 @@
-// import { Promise } from 'promise-polyfill';
-// import 'isomorphic-fetch';
 import { factory, detectPrng } from 'ulid';
 
 var prng = detectPrng(true); // pass `true` to allow insecure
 var ulid = factory(prng);
 
-/* ulid for page load */
 /* lint for semicolons */
 
 var LIB_NAME = 'Footprints';
@@ -49,10 +46,12 @@ export function init(footprints){
       opts.pageTime = (opts.pageTime || new Date()).toISOString();
       opts.successCallback = opts.successCallback || footprints.noop;
       opts.errorCallback = opts.errorCallback || footprints.noop;
-      opts.uniqueId = opts.uniqueId || ulid;
+      opts.uniqueIdFunc = opts.uniqueIdFunc || ulid;
+      opts.pageId = opts.pageId || opts.uniqueIdFunc();
     })(footprints.options);
 
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
+    footprints.state.basePayload.pageId = footprints.options.pageId;
 
     var safeProcessQueues = function(){
       if(typeof footprints.processQueues === 'function'){
@@ -81,7 +80,7 @@ export function init(footprints){
     endpointUrl,
     successCallback,
     errorCallback,
-    uniqueId
+    uniqueIdFunc
   ) {
 
     var processQueues = footprints.processQueues = function(){
@@ -112,7 +111,7 @@ export function init(footprints){
     var fire = function(eventName, properties ) {
       var payload = clone(properties);
       payload['eventTime'] = new Date().toISOString();
-      payload['eventId'] = uniqueId();
+      payload['eventId'] = uniqueIdFunc();
       payload['eventName'] = eventName;
       enqueueOutput(payload);
     };
@@ -198,7 +197,7 @@ export function init(footprints){
     footprints.options.endpointUrl,
     footprints.options.successCallback,
     footprints.options.errorCallback,
-    footprints.options.uniqueId
+    footprints.options.uniqueIdFunc
   );
 }
 

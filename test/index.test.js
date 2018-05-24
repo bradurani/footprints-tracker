@@ -47,18 +47,27 @@ describe("Footprints", function(){
 
     beforeEach(function(){
       options = {
-        endpointUrl: 'http://my.domain/analytics'
+        endpointUrl: 'http://my.domain/analytics',
       }
       footprints = window.Footprints = {
         options: options
       };
     });
 
+    it('creates a random pageId', function(){
+      init(footprints);
+      expect(footprints.options.pageId).to.be.a.string;
+      expect(footprints.state.basePayload.pageId).to.eql(footprints.options.pageId);
+    });
+
     it('initializes with empty state', function(){
+      options.uniqueIdFunc = function(){ return '111'; };
       init(footprints);
       expect(footprints.state).to.eql({
         basePayload: {
-          pageTime: '2014-02-28T00:00:00.000Z',        },
+          pageTime: '2014-02-28T00:00:00.000Z',
+          pageId: '111',
+        },
         inputQueue: [],
         outputQueue: []
       })
@@ -66,29 +75,40 @@ describe("Footprints", function(){
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 5000,
         pageTime: '2014-02-28T00:00:00.000Z',
+        pageId: '111',
         debug: false,
         successCallback: footprints.noop,
         errorCallback: footprints.noop,
       });
+      expect(footprints.state.basePayload).to.eql({
+        pageTime: '2014-02-28T00:00:00.000Z',
+        pageId: '111'
+      })
       expect(window.setInterval.calledOnce).to.eql(true);
     });
 
-    it('allows overriding intervalWait, debug, pageTime and uniqueId', function(){
+    it('allows overriding intervalWait, debug, pageTime, pageId and uniqueId', function(){
+      var uid = options.uniqueIdFunc = function(){ return '111'; };
       options.intervalWait = 2000
       options.pageTime = new Date(2018, 3, 6);
       options.debug = true;
-      var uid = options.uniqueId = function(){};
+      options.pageId = '222';
       init(footprints);
       expect(options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 2000,
+        pageId: '222',
         pageTime: '2018-04-06T07:00:00.000Z',
         debug: true,
         successCallback: footprints.noop,
         errorCallback: footprints.noop,
-        uniqueId: uid
+        uniqueIdFunc: uid
       });
-      expect(footprints.state.basePayload.pageTime).to.eql('2018-04-06T07:00:00.000Z');
+      expect(footprints.state.basePayload).to.eql({
+        pageTime: '2018-04-06T07:00:00.000Z',
+        pageId: '222'
+      })
+      expect(window.setInterval.calledOnce).to.eql(true);
     });
 
     it('copy footprints.q to state.inputQueue', function(){
@@ -109,9 +129,9 @@ describe("Footprints", function(){
       var errorCallback;
 
       beforeEach(function(){
-        options.debug = true;
-        options.uniqueId = function(){
-          return '123abc';
+        // options.debug = true;
+        options.uniqueIdFunc = function(){
+          return 'abc123';
         }
       });
 
@@ -161,9 +181,10 @@ describe("Footprints", function(){
         options.errorCallback = function(error){
           expect(footprints.state.outputQueue).to.eql([{
             eventName: 'pageView',
+            pageId: 'abc123',
             pageTime: '2014-02-28T00:00:00.000Z',
             eventTime: '2014-02-28T00:00:00.000Z',
-            eventId: '123abc'
+            eventId: 'abc123'
           }]);
           done();
         }
@@ -198,8 +219,9 @@ describe("Footprints", function(){
           expect(footprints.state.outputQueue).to.eql([{
             eventName: 'pageView',
             pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
             eventTime: '2014-02-28T00:00:00.000Z',
-            eventId: '123abc'
+            eventId: 'abc123'
           }]);
           done();
         }
@@ -316,8 +338,9 @@ describe("Footprints", function(){
         it('sends a pageView payload with the default format', function(done){
           fetchMock.postOnce(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
             eventTime: '2014-02-28T00:00:00.000Z',
-            eventId: '123abc',
+            eventId: 'abc123',
             eventName: 'pageView'
           }), 200);
           options.successCallback = function(response){
@@ -334,15 +357,16 @@ describe("Footprints", function(){
 
       describe('setContext',function(done){
         it('sends a pageView payload with the user attributes', function(done){
-          fetchMock.post(matchRequest('http://my.domain/analytics',
-            { pageTime: '2014-02-28T00:00:00.000Z',
-              userId: 1,
-              userName: 'Brad Urani',
-              userEmail: 'bradurani@gmail.com',
-              eventTime: '2014-02-28T00:00:00.000Z',
-              eventId: '123abc',
-              eventName: 'pageView'
-            }), 200);
+          fetchMock.post(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
+            userId: 1,
+            userName: 'Brad Urani',
+            userEmail: 'bradurani@gmail.com',
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: 'abc123',
+            eventName: 'pageView'
+          }), 200);
           var s = options.successCallback = sinon.fake(function(response){
             expect(response.status).to.eql(200);
             if(s.callCount >= 3) {
@@ -368,35 +392,38 @@ describe("Footprints", function(){
         it('sends a trackEvent with context', function(done){
           fetchMock.post(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             key: 'project.directory.contact.created',
             properties: { contact_name: 'Jane Doe' },
             eventTime: '2014-02-28T00:00:00.000Z',
-            eventId: '123abc',
+            eventId: 'abc123',
             eventName: 'trackEvent'
           }), 200, { name: 'created' });
           fetchMock.post(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             key: 'project.directory.contact.updated',
             properties: { contact_name: 'Jane Door', state: 'DE' },
             eventTime: '2014-02-28T00:00:00.000Z',
-            eventId: '123abc',
+            eventId: 'abc123',
             eventName: 'trackEvent'
           }), 200, { name: 'updated' });
           fetchMock.post(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             key: 'project.directory.contact.deleted',
             properties: { contact_name: 'Jane Door', state: 'DE' },
             eventTime: '2014-02-28T00:00:00.000Z',
-            eventId: '123abc',
+            eventId: 'abc123',
             eventName: 'trackEvent'
           }), 200, { name: 'deleted' });
           var s = options.successCallback = sinon.fake(function(response){
