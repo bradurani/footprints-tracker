@@ -150,15 +150,15 @@ export function init(footprints){
         body: JSON.stringify(payload)
       }).then(function(response){
         if (response.status >= 200 && response.status < 300) {
-          return response
+          return response;
         } else {
-          var error = new Error(response.statusText)
-          error.response = response
-          throw error
+          var error = new Error(response.statusText);
+          error.response = response;
+          throw error;
         }
       }).then(sendComplete.bind(null, payload))
         .catch(function(e){
-          sendError(payload, e)
+          sendError(payload, e);
         });
     };
 
