@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { init } from "../src/index.js"
-import  { MockDate }  from "MockDate";
+import  MockDate  from "MockDate";
 import sinon from "sinon";
 import fetchMock from 'fetch-mock';
 import { matchRequest } from './helper.js'
