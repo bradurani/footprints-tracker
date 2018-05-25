@@ -23,7 +23,7 @@
   "author": "Brad Urani",
   "scripts": {
     "build": "webpack --devtool source-map",
-    "test": "node_modules/webpack/bin/webpack.js test/index.test.js --config webpack.config-test.js && mocha dist/main.js --require source-map-support/register --require jsdom-global/register --require isomorphic-fetch",
+    "test": "webpack test/index.test.js --config webpack.config-test.js && mocha dist/main.js --require source-map-support/register --require jsdom-global/register --require isomorphic-fetch",
     "start": "webpack-dev-server --open --config webpack.config-dev.js"
   },
   "dependencies": {
