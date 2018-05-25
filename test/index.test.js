@@ -102,7 +102,7 @@ describe("Footprints", function(){
     it('allows overriding intervalWait, debug, pageTime, pageId and uniqueId', function(){
       var uid = options.uniqueIdFunc = function(){ return '111'; };
       options.intervalWait = 2000
-      options.pageTime = new Date(2018, 3, 6);
+      options.pageTime = new Date(Date.UTC(2018, 3, 6));
       options.debug = true;
       options.pageId = '222';
       init(footprints);
@@ -110,7 +110,7 @@ describe("Footprints", function(){
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 2000,
         pageId: '222',
-        pageTime: '2018-04-06T07:00:00.000Z',
+        pageTime: '2018-04-06T00:00:00.000Z',
         debug: true,
         successCallback: footprints.noop,
         errorCallback: footprints.noop,
@@ -118,7 +118,7 @@ describe("Footprints", function(){
         uniqueIdFunc: uid
       });
       expect(footprints.state.basePayload).to.eql({
-        pageTime: '2018-04-06T07:00:00.000Z',
+        pageTime: '2018-04-06T00:00:00.000Z',
         pageId: '222'
       })
       expect(window.setInterval.calledOnce).to.eql(true);
