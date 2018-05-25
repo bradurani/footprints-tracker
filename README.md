@@ -1,8 +1,8 @@
 [![CircleCI](https://circleci.com/gh/bradurani/footprints.svg?style=svg)](https://circleci.com/gh/bradurani/footprints)
 
-# Footprints
+# Footprints Tracker
 
-Footprints is a browser analytics tracking library. It is used to track user
+Footprints Tracker is a browser analytics tracking library. It is used to track user
 actions in the browser and send events to a server. It is backend agnostic and
 can be configured to work for most tracking use cases. It provides a retry queue
 for failed sends and a persistent context for identifying users and other state.

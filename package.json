@@ -1,5 +1,5 @@
 {
-  "name": "footprints",
+  "name": "Footprints Tracker",
   "authors": [
     {
       "name": "Brad Urani",
@@ -15,11 +15,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bradurani/footprints.git"
+    "url": "https://github.com/bradurani/footprints-tracker.git"
   },
   "license": "MIT",
   "browser": true,
-  "homepage": "https://github.com/bradurani/footprints",
+  "homepage": "https://github.com/bradurani/footprints-tracker",
   "author": "Brad Urani",
   "scripts": {
     "build": "webpack --devtool source-map",

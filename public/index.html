@@ -10,12 +10,9 @@
         debug: true
       });
 
-      Footprints.user(1,{ name: 'Brad Urani', email: 'foo@bar.com'});
-      Footprints.pageView('Lorem Ipsum');
-      Footprints.track('project.directory.contact.created',{
-        properties: {
-          contact_name: 'Jane Doe'
-      }});
+Footprints.user('12', { name: 'Brad Urani' })
+Footprints.context({ pageType: 'shopping', collection: 'Fall 2018' }),
+Footprints.pageView();
     </script>
   </head>
   <body>
