@@ -22,7 +22,7 @@
   "homepage": "https://github.com/bradurani/footprints-tracker",
   "author": "Brad Urani",
   "scripts": {
-    "build": "webpack --devtool source-map",
+    "build": "webpack --devtool source-map && open public/index.prod.html",
     "test": "webpack test/index.test.js --config webpack.config-test.js && mocha dist/main.js --require source-map-support/register --require jsdom-global/register --require isomorphic-fetch",
     "start": "webpack-dev-server --open --config webpack.config-dev.js"
   },
