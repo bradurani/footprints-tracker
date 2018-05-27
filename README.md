@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/bradurani/footprints.svg?style=svg)](https://circleci.com/gh/bradurani/footprints)
+[![CircleCI](https://circleci.com/gh/bradurani/footprints-tracker.svg?style=svg)](https://circleci.com/gh/bradurani/footprints-tracker)
 
 # Footprints Tracker
 
