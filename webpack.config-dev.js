@@ -10,7 +10,7 @@ module.exports = {
   devtool: "source-map",
   mode: 'development',
   output: {
-    filename: 'bundle.js',
+    filename: 'main.dev.js',
     path: path.resolve(__dirname, 'dist')
   },
   devServer: {
