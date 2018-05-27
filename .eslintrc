@@ -10,7 +10,8 @@
   "globals": {
     "document": true,
     "window": true,
-    "navigator": true
+    "navigator": true,
+    "global": true
   },
   "rules": {
     "comma-dangle": "error",

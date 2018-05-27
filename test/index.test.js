@@ -1,9 +1,10 @@
+import { it, describe, afterEach, beforeEach } from "mocha";
 import { expect } from "chai";
-import { init } from "../src/index.js"
+import { init } from "../src/index.js";
 import  MockDate  from "mockdate";
 import sinon from "sinon";
 import fetchMock from 'fetch-mock';
-import { matchRequest } from './helper.js'
+import { matchRequest } from './helper.js';
 
 describe("Footprints", function(){
   var window;
@@ -25,7 +26,7 @@ describe("Footprints", function(){
   describe('performSetup', function() {
     it('raises an error if options is not present', function(){
       expect(function(){
-        init(footprints)
+        init(footprints);
       }).to.throw('FOOTPRINTS: your snippet must set Footprints.options');
     });
 
@@ -38,7 +39,7 @@ describe("Footprints", function(){
 
       it('raises an error if options.endpointUrl is not present', function(){
         expect(function(){
-          init(footprints)
+          init(footprints);
         }).to.throw('FOOTPRINTS: you must pass the option endpointUrl');
       });
     });
@@ -49,8 +50,8 @@ describe("Footprints", function(){
 
     beforeEach(function(){
       options = {
-        endpointUrl: 'http://my.domain/analytics',
-      }
+        endpointUrl: 'http://my.domain/analytics'
+      };
       footprints = window.Footprints = {
         options: options
       };
@@ -68,11 +69,11 @@ describe("Footprints", function(){
       expect(footprints.state).to.eql({
         basePayload: {
           pageTime: '2014-02-28T00:00:00.000Z',
-          pageId: '111',
+          pageId: '111'
         },
         inputQueue: [],
         outputQueue: []
-      })
+      });
       expect(options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
         intervalWait: 5000,
@@ -82,12 +83,12 @@ describe("Footprints", function(){
         readyCallback: footprints.noop,
         successCallback: footprints.noop,
         uniqueIdFunc: uid,
-        errorCallback: footprints.noop,
+        errorCallback: footprints.noop
       });
       expect(footprints.state.basePayload).to.eql({
         pageTime: '2014-02-28T00:00:00.000Z',
         pageId: '111'
-      })
+      });
       expect(window.setInterval.calledOnce).to.eql(true);
       expect(footprints.initialized).to.eql(true);
     });
@@ -100,7 +101,7 @@ describe("Footprints", function(){
 
     it('allows overriding intervalWait, debug, pageTime, pageId and uniqueId', function(){
       var uid = options.uniqueIdFunc = function(){ return '111'; };
-      options.intervalWait = 2000
+      options.intervalWait = 2000;
       options.pageTime = new Date(Date.UTC(2018, 3, 6));
       options.debug = true;
       options.pageId = '222';
@@ -119,12 +120,12 @@ describe("Footprints", function(){
       expect(footprints.state.basePayload).to.eql({
         pageTime: '2018-04-06T00:00:00.000Z',
         pageId: '222'
-      })
+      });
       expect(window.setInterval.calledOnce).to.eql(true);
     });
 
     it('copy footprints.q to state.inputQueue', function(){
-      footprints.q = [['pageView']]
+      footprints.q = [['pageView']];
       init(footprints);
       expect(footprints.state.inputQueue).to.equal(footprints.q);
     });
@@ -139,7 +140,7 @@ describe("Footprints", function(){
     it('calls the readyCallback after init', function(done){
       options.readyCallback = function(){
         done();
-      }
+      };
       init(footprints);
     });
 
@@ -151,7 +152,7 @@ describe("Footprints", function(){
         // options.debug = true;
         options.uniqueIdFunc = function(){
           return 'abc123';
-        }
+        };
       });
 
       afterEach(function(){
@@ -161,31 +162,31 @@ describe("Footprints", function(){
       it('sends a pageView when an action is enqueued', function(done){
         fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' });
         options.successCallback = function(response){
-          expect(response.body).to.eql('{"eventId":"123"}')
+          expect(response.body).to.eql('{"eventId":"123"}');
           expect(response.status).to.eql(200);
           done();
         };
         options.errorCallback = function(error){
           done(error);
-        }
+        };
         init(footprints);
-        footprints.push('pageView')
+        footprints.push('pageView');
       });
 
       it('sends pageView on init when action is enqueued in the temp queue', function(done){
         fetchMock.postOnce('http://my.domain/analytics', { eventId: '123' });
         options.successCallback = function(response){
-          expect(response.body).to.eql('{"eventId":"123"}')
+          expect(response.body).to.eql('{"eventId":"123"}');
           expect(response.status).to.eql(200);
           done();
         };
         options.errorCallback = function(error){
           done(error);
-        }
+        };
         // temp queue and push method set-up like the snippet
         var fp = footprints;
         fp.push = function(){
-          (fp.q = fp.q||[]).push([].slice.call(arguments))
+          (fp.q = fp.q||[]).push([].slice.call(arguments));
         };
         window.Footprints.push('pageView');
         init(footprints);
@@ -209,15 +210,15 @@ describe("Footprints", function(){
             eventId: 'abc123'
           }]);
           done();
-        }
+        };
         init(footprints);
-        footprints.push('pageView')
+        footprints.push('pageView');
       });
 
       it('make multiple successful calls', function(done){
         fetchMock.post('http://my.domain/analytics', { eventId: '123' });
         var s = options.successCallback = sinon.fake(function(response){
-          expect(response.body).to.eql('{"eventId":"123"}')
+          expect(response.body).to.eql('{"eventId":"123"}');
           expect(response.status).to.eql(200);
           if(s.callCount >= 3) {
             done();
@@ -225,11 +226,11 @@ describe("Footprints", function(){
         });
         options.errorCallback = function(error){
           done(error);
-        }
+        };
         init(footprints);
-        footprints.push('pageView')
-        footprints.push('pageView')
-        footprints.push('pageView')
+        footprints.push('pageView');
+        footprints.push('pageView');
+        footprints.push('pageView');
       });
 
       it('fails on non-200 error code', function(done){
@@ -250,15 +251,15 @@ describe("Footprints", function(){
             eventId: 'abc123'
           }]);
           done();
-        }
+        };
         init(footprints);
-        footprints.push('pageView')
+        footprints.push('pageView');
       });
 
       it('a failed page retries when another is enqueued', function(done){
-        fetchMock.post('http://my.domain/analytics', { status: 401, body: '1'}, { overwriteRoutes: false, repeat: 1})
-        fetchMock.post('http://my.domain/analytics', { status: 401, body: '2'}, { overwriteRoutes: false, repeat: 1})
-        fetchMock.post('http://my.domain/analytics', { status: 500, body: '3'}, { overwriteRoutes: false, repeat: 1})
+        fetchMock.post('http://my.domain/analytics', { status: 401, body: '1'}, { overwriteRoutes: false, repeat: 1});
+        fetchMock.post('http://my.domain/analytics', { status: 401, body: '2'}, { overwriteRoutes: false, repeat: 1});
+        fetchMock.post('http://my.domain/analytics', { status: 500, body: '3'}, { overwriteRoutes: false, repeat: 1});
         fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '4'}, { overwriteRoutes: false, repeat: 1});
         fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '5'}, { overwriteRoutes: false, repeat: 1});
         fetchMock.post('http://my.domain/analytics', { eventId: '123', body: '6'}, { overwriteRoutes: false, repeat: 1});
@@ -266,7 +267,7 @@ describe("Footprints", function(){
           expect(JSON.parse(response.body).eventId).to.eql('123');
           expect(response.status).to.eql(200);
           if(suc.callCount == 3){
-            expect(err.callCount).to.eql(3)
+            expect(err.callCount).to.eql(3);
             expect(fetchMock.done()).to.be.true;
             done();
           }
@@ -285,9 +286,9 @@ describe("Footprints", function(){
       });
 
       it('retries several enqueued at once', function(done){
-        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: 1})
-        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: 2})
-        fetchMock.post('http://my.domain/analytics', { status: 500 }, { overwriteRoutes: false, repeat: 1, name: 3})
+        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: 1});
+        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: 2});
+        fetchMock.post('http://my.domain/analytics', { status: 500 }, { overwriteRoutes: false, repeat: 1, name: 3});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: 4});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: 5});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: 6});
@@ -295,7 +296,7 @@ describe("Footprints", function(){
           expect(JSON.parse(response.body).eventId).to.eql('123');
           expect(response.status).to.eql(200);
           if(suc.callCount == 3){
-            expect(err.callCount).to.eql(3)
+            expect(err.callCount).to.eql(3);
             expect(fetchMock.done()).to.be.true;
             done();
           }
@@ -311,8 +312,8 @@ describe("Footprints", function(){
       });
 
       it('retries with a mixture of sync and async', function(done){
-        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: '1'})
-        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: '2'})
+        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: '1'});
+        fetchMock.post('http://my.domain/analytics', { status: 401 }, { overwriteRoutes: false, repeat: 1, name: '2'});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: '3'});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: '4'});
         fetchMock.post('http://my.domain/analytics', { eventId: '123' }, { overwriteRoutes: false, repeat: 1, name: '5'});
@@ -320,7 +321,7 @@ describe("Footprints", function(){
           expect(JSON.parse(response.body).eventId).to.eql('123');
           expect(response.status).to.eql(200);
           if(suc.callCount == 3){
-            expect(err.callCount).to.eql(2)
+            expect(err.callCount).to.eql(2);
             expect(fetchMock.done()).to.be.true;
             done();
           }
@@ -331,7 +332,7 @@ describe("Footprints", function(){
         footprints.push('pageView', 2);
         setTimeout(function(){
           footprints.push('pageView', 3);
-        }, 100)
+        }, 100);
       });
 
       it('succeeds with scattered timing', function(done){
@@ -371,7 +372,7 @@ describe("Footprints", function(){
             title: document.title,
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'pageView',
+            eventName: 'pageView'
           }), 200);
           options.successCallback = function(response){
             expect(response.status).to.eql(200);
@@ -379,9 +380,9 @@ describe("Footprints", function(){
           };
           options.errorCallback = function(error){
             done(error);
-          }
+          };
           init(footprints);
-          footprints.push('pageView')
+          footprints.push('pageView');
         });
 
         it('sends a pageView with name', function(done){
@@ -395,7 +396,7 @@ describe("Footprints", function(){
             name: 'Toonspeak',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'pageView',
+            eventName: 'pageView'
           }), 200);
           options.successCallback = function(response){
             expect(response.status).to.eql(200);
@@ -403,7 +404,7 @@ describe("Footprints", function(){
           };
           options.errorCallback = function(error){
             done(error);
-          }
+          };
           init(footprints);
           footprints.push('pageView', 'Toonspeak');
         });
@@ -428,7 +429,7 @@ describe("Footprints", function(){
           };
           options.errorCallback = function(error){
             done(error);
-          }
+          };
           init(footprints);
           footprints.push('pageView', 'Toonspeak', { category: 'clothing' });
         });
@@ -458,16 +459,16 @@ describe("Footprints", function(){
           });
           options.errorCallback = function(error){
             done(error);
-          }
+          };
           init(footprints);
           footprints.push('context', {
             userId: 1,
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com'
           });
-          footprints.push('pageView')
-          footprints.push('pageView')
-          footprints.push('pageView')
+          footprints.push('pageView');
+          footprints.push('pageView');
+          footprints.push('pageView');
         });
       });
 
@@ -490,7 +491,7 @@ describe("Footprints", function(){
           };
           options.errorCallback = function(error){
             done(error);
-          }
+          };
           init(footprints);
           footprints.user({
             userName: 'Brad Urani',
@@ -499,7 +500,7 @@ describe("Footprints", function(){
           footprints.push('track', 'project.directory.contact.created', {
             properties: { contact_name: 'Jane Doe' }
           });
-        })
+        });
 
         it('sends a track with user with id', function(done){
           fetchMock.postOnce(matchRequest('http://my.domain/analytics', {
@@ -520,7 +521,7 @@ describe("Footprints", function(){
           };
           options.errorCallback = function(error){
             done(error);
-          }
+          };
           init(footprints);
           footprints.user('123456', {
             userName: 'Brad Urani',
@@ -529,7 +530,7 @@ describe("Footprints", function(){
           footprints.push('track', 'project.directory.contact.created', {
             properties: { contact_name: 'Jane Doe' }
           });
-        })
+        });
       });
 
       describe('track',function(done){
@@ -578,7 +579,7 @@ describe("Footprints", function(){
           });
           options.errorCallback = function(error){
             done(error);
-          }
+          };
           init(footprints);
           footprints.push('context', {
             userId: 1,
