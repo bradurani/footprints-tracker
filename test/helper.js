@@ -7,6 +7,6 @@ export function matchRequest(expectedUrl, expectedBody){
     //   console.log('expected');
     //   console.log(JSON.stringify(expectedBody));
     // }
-    return url === expectedUrl && bodyMatched
+    return url === expectedUrl && bodyMatched;
   };
 }

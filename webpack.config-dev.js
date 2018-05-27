@@ -5,7 +5,7 @@ module.exports = {
   output: {
     // use absolute paths in sourcemaps (important for debugging via IDE)
     devtoolModuleFilenameTemplate: '[absolute-resource-path]',
-    devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]',
+    devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
   },
   devtool: "source-map",
   mode: 'development',
@@ -18,6 +18,6 @@ module.exports = {
     publicPath: "/dist/",
     index: 'index.html',
     compress: true,
-    port: 8000,
+    port: 8000
   }
 };

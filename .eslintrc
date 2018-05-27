@@ -11,7 +11,10 @@
     "document": true,
     "window": true,
     "navigator": true,
-    "global": true
+    "global": true,
+    "require": true,
+    "__dirname": true,
+    "module": true
   },
   "rules": {
     "comma-dangle": "error",
