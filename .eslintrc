@@ -1,7 +1,7 @@
 {
   "parserOptions": {
     "ecmaVersion": 3,
-    "sourceType": "modules"
+    "sourceType": "module"
   },
   "env": {
     "browser": true,
@@ -16,6 +16,7 @@
     "comma-dangle": "error",
     "no-extend-native": "error",
     "semi": "error",
+    "strict": 0,
     "no-undef": "error"
   }
 }

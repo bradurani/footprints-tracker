@@ -64,7 +64,7 @@ export function init(footprints){
       if(typeof footprints.processQueues === 'function'){
         footprints.processQueues();
       }
-    }
+    };
 
     // replace the push method from the snippet with one
     // that calls processQueue so we don't have to wait for the timer
@@ -94,7 +94,7 @@ export function init(footprints){
     var processQueues = footprints.processQueues = function(){
       processInputQueue();
       processOutputQueue();
-    }
+    };
 
     var processInputQueue = function() {
       trace("processing input queue", inputQueue);
@@ -141,7 +141,7 @@ export function init(footprints){
     };
 
     var send = function(payload) {
-      trace("sending event", payload)
+      trace("sending event", payload);
       fetch(endpointUrl, {
         method: 'POST',
         headers: {
@@ -169,7 +169,7 @@ export function init(footprints){
 
     var sendError = function(payload, e) {
       enqueueOutput(payload);
-      errorCallback(e)
+      errorCallback(e);
       error('Event Failed', e, payload);
     };
 
@@ -215,7 +215,7 @@ export function init(footprints){
         error('could not get page props', e);
       }
       return pageProps;
-    }
+    };
 
     var trace = function() {
       if (debug) {
