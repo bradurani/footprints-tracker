@@ -199,7 +199,7 @@ describe("Footprints", function(){
         };
         options.errorCallback = function(error){
           expect(footprints.state.outputQueue).to.eql([{
-            eventName: 'pageView',
+            eventType: 'pageView',
             pageId: 'abc123',
             url: window.location.href,
             path: window.location.path,
@@ -240,7 +240,7 @@ describe("Footprints", function(){
         };
         options.errorCallback = function(error){
           expect(footprints.state.outputQueue).to.eql([{
-            eventName: 'pageView',
+            eventType: 'pageView',
             pageTime: '2014-02-28T00:00:00.000Z',
             pageId: 'abc123',
             url: window.location.href,
@@ -372,7 +372,7 @@ describe("Footprints", function(){
             title: document.title,
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'pageView'
+            eventType: 'pageView'
           }), 200);
           options.successCallback = function(response){
             expect(response.status).to.eql(200);
@@ -396,7 +396,7 @@ describe("Footprints", function(){
             name: 'Toonspeak',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'pageView'
+            eventType: 'pageView'
           }), 200);
           options.successCallback = function(response){
             expect(response.status).to.eql(200);
@@ -421,7 +421,7 @@ describe("Footprints", function(){
             name: 'Toonspeak',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'pageView'
+            eventType: 'pageView'
           }), 200);
           options.successCallback = function(response){
             expect(response.status).to.eql(200);
@@ -449,7 +449,7 @@ describe("Footprints", function(){
             title: document.title,
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'pageView'
+            eventType: 'pageView'
           }), 200);
           var s = options.successCallback = sinon.fake(function(response){
             expect(response.status).to.eql(200);
@@ -480,10 +480,10 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             properties: { contact_name: 'Jane Doe' },
-            key: 'project.directory.contact.created',
+            eventName: 'project.directory.contact.created',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'track'
+            eventType: 'track'
           }), 200, { name: 'created' });
           options.successCallback = function(response){
             expect(response.status).to.eql(200);
@@ -510,10 +510,10 @@ describe("Footprints", function(){
             userEmail: 'bradurani@gmail.com',
             userId: '123456',
             properties: { contact_name: 'Jane Doe' },
-            key: 'project.directory.contact.created',
+            eventName: 'project.directory.contact.created',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'track'
+            eventType: 'track'
           }), 200, { name: 'created' });
           options.successCallback = function(response){
             expect(response.status).to.eql(200);
@@ -542,10 +542,10 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             properties: { contact_name: 'Jane Doe' },
-            key: 'project.directory.contact.created',
+            eventName: 'project.directory.contact.created',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'track'
+            eventType: 'track'
           }), 200, { name: 'created' });
           fetchMock.post(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
@@ -554,10 +554,10 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             properties: { contact_name: 'Jane Door', state: 'DE' },
-            key: 'project.directory.contact.updated',
+            eventName: 'project.directory.contact.updated',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'track'
+            eventType: 'track'
           }), 200, { name: 'updated' });
           fetchMock.post(matchRequest('http://my.domain/analytics', {
             pageTime: '2014-02-28T00:00:00.000Z',
@@ -566,10 +566,10 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             properties: { contact_name: 'Jane Door', state: 'DE' },
-            key: 'project.directory.contact.deleted',
+            eventName: 'project.directory.contact.deleted',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
-            eventName: 'track'
+            eventType: 'track'
           }), 200, { name: 'deleted' });
           var s = options.successCallback = sinon.fake(function(response){
             expect(response.status).to.eql(200);

@@ -116,11 +116,11 @@ export function init(footprints){
       }
     };
 
-    var fire = function(eventName, properties) {
+    var fire = function(eventType, properties) {
       var payload = clone(properties);
       payload['eventTime'] = new Date().toISOString();
       payload['eventId'] = uniqueIdFunc();
-      payload['eventName'] = eventName;
+      payload['eventType'] = eventType;
       enqueueOutput(payload);
     };
 
@@ -190,10 +190,10 @@ export function init(footprints){
         }
         actions.context(props);
       },
-      track: function(key, properties){
+      track: function(eventName, properties){
         var props = Object.assign(basePayload, properties);
-        if(key){
-          props['key'] = key;
+        if(eventName){
+          props['eventName'] = eventName;
         }
         fire('track', props);
       },

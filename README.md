@@ -34,17 +34,17 @@ endpoint
   "pageTime": "2018-05-24T20:30:54.425Z",
   "pageId": "01CE9XHRESP6ZZ3AH8HAD3HXE3",
   "eventId": "01CE9XHREYSMBPNE23M8JZKPYB",
-  "eventName":"track",
+  "eventType":"track",
   "eventTime": "2018-05-24T20:30:54.430Z",
-  "key": "Photo Uploaded"
+  "eventName": "Photo Uploaded"
 }
 ```
 **pageTime**: The time the page loaded in the browser  
 **pageId**: a [ulid](https://www.npmjs.com/package/ulid) representing the page.  
 This will be the same for all events sent from the same page.  
 **eventId**: a [ulid](https://www.npmjs.com/package/ulid) unique to this event  
-**eventName**: The type of event being sent  
-**key**: A name identifying the action the user has taken  
+**eventType**: The type of event being sent  
+**eventName**: A name identifying the action the user has taken  
 **title**: The title of the page  
 **url**: the url of the page  
 
@@ -80,7 +80,7 @@ will create a POST with the following body:
 {
   "collection": "Fall 2018",
   "eventId": "01CE9ZV5F5C8HYQ741YFJ5TNX0",
-  "eventName": "pageView",
+  "eventType": "pageView",
   "eventTime": "2018-05-24T21:10:59.813Z",
   "name": "Brad Urani",
   "pageId": "01CE9ZV5F47EDX0HHRG7NS4VQ9",
