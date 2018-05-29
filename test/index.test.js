@@ -480,7 +480,7 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             properties: { contact_name: 'Jane Doe' },
-            eventName: 'project.directory.contact.created',
+            eventName: 'Contact Created',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
             eventType: 'track'
@@ -497,7 +497,7 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com'
           });
-          footprints.push('track', 'project.directory.contact.created', {
+          footprints.push('track', 'Contact Created', {
             properties: { contact_name: 'Jane Doe' }
           });
         });
@@ -510,7 +510,7 @@ describe("Footprints", function(){
             userEmail: 'bradurani@gmail.com',
             userId: '123456',
             properties: { contact_name: 'Jane Doe' },
-            eventName: 'project.directory.contact.created',
+            eventName: 'Contact Created',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
             eventType: 'track'
@@ -527,7 +527,7 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com'
           });
-          footprints.push('track', 'project.directory.contact.created', {
+          footprints.push('track', 'Contact Created', {
             properties: { contact_name: 'Jane Doe' }
           });
         });
@@ -542,7 +542,7 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             properties: { contact_name: 'Jane Doe' },
-            eventName: 'project.directory.contact.created',
+            eventName: 'Contact Created',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
             eventType: 'track'
@@ -554,7 +554,7 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             properties: { contact_name: 'Jane Door', state: 'DE' },
-            eventName: 'project.directory.contact.updated',
+            eventName: 'Contact Updated',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
             eventType: 'track'
@@ -566,7 +566,7 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com',
             properties: { contact_name: 'Jane Door', state: 'DE' },
-            eventName: 'project.directory.contact.deleted',
+            eventName: 'Contact Deleted',
             eventTime: '2014-02-28T00:00:00.000Z',
             eventId: 'abc123',
             eventType: 'track'
@@ -586,13 +586,13 @@ describe("Footprints", function(){
             userName: 'Brad Urani',
             userEmail: 'bradurani@gmail.com'
           });
-          footprints.push('track', 'project.directory.contact.created', {
+          footprints.push('track', 'Contact Created', {
             properties: { contact_name: 'Jane Doe' }
           });
-          footprints.push('track', 'project.directory.contact.updated', {
+          footprints.push('track', 'Contact Updated', {
             properties: { contact_name: 'Jane Door', state: 'DE' }
           });
-          footprints.push('track', 'project.directory.contact.deleted', {
+          footprints.push('track', 'Contact Deleted', {
             properties: { contact_name: 'Jane Door', state: 'DE' }
           });
         });
