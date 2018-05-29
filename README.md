@@ -144,7 +144,6 @@ and navigate to `localhost:8000`
 - Callbacks for all event types
 - Link tracking capabilities
 - Form tracking capabilites
-- Config for running test suite in a browser
 - Ability to disable the retry timer
 - beforeSend callback for transforming the POST body
 - Event batching
