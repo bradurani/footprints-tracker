@@ -5,7 +5,7 @@
     <script type='text/javascript'>
       !(function(w,d,s,o){var fp=w.Footprints=w.Footprints||{};fp.q=fp.q||[];if(fp.initialized||fp.invoked) return;fp.invoked=true;fp.pageTime=new Date();fp.options = o;var m=['user','pageView','track','debug','once','off','on','ready','reset','context'];var pf=function(k){return function(){var a=[].slice.call(arguments);a.unshift(k);fp.q.push(a);}};for(var i=0;i<m.length;i++){fp[m[i]]=pf(m[i]);}var e=d.createElement('script');e.async=1;e.src=s;var t=d.getElementsByTagName('script')[0];t.parentNode.insertBefore(e,t);}
       )(window, document, '/dist/main.dev.js', {
-        endpointUrl: 'http://localhost:3000/vapid/analytic_events/',
+        endpointUrl: 'http://localhost:3000/analytics/',
         intervalWait: 10000,
         debug: true
       });
