@@ -82,6 +82,7 @@ describe("Footprints", function(){
         debug: false,
         readyCallback: footprints.noop,
         successCallback: footprints.noop,
+        transformPayloadFunc: footprints.identity,
         uniqueIdFunc: uid,
         errorCallback: footprints.noop
       });
@@ -115,6 +116,7 @@ describe("Footprints", function(){
         successCallback: footprints.noop,
         errorCallback: footprints.noop,
         readyCallback: footprints.noop,
+        transformPayloadFunc: footprints.identity,
         uniqueIdFunc: uid
       });
       expect(footprints.state.basePayload).to.eql({
@@ -595,6 +597,32 @@ describe("Footprints", function(){
           footprints.push('track', 'Contact Deleted', {
             properties: { contact_name: 'Jane Door', state: 'DE' }
           });
+        });
+      });
+
+      describe('transformPayloadFunc', function(){
+        it('transforms the payload when given a payload transform function', function(done){
+          fetchMock.post(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
+            eventName: 'Contact Created',
+            eventTime: 1393545600000,
+            eventId: 'abc123',
+            eventType: 'track'
+          }), 200, { name: 'created' });
+          options.successCallback = function(response){
+            expect(response.status).to.eql(200);
+            done();
+          };
+          options.errorCallback = function(error){
+            done(error);
+          };
+          options.transformPayloadFunc = function(defaultPayload){
+            defaultPayload['eventTime'] = Date.parse(defaultPayload['eventTime']);
+            return defaultPayload;
+          };
+          init(footprints);
+          footprints.push('track', 'Contact Created');
         });
       });
     });

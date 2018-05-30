@@ -1,9 +1,7 @@
 import { factory, detectPrng } from 'ulid';
 
-var prng = detectPrng(true); // pass `true` to allow insecure
+var prng = detectPrng(true); // pass `true` to allow insecure Math.rand
 var ulid = factory(prng);
-
-/* lint for semicolons */
 
 var LIB_NAME = 'Footprints';
 var DEFAULT_INTERVAL_WAIT = 5000;
@@ -23,6 +21,7 @@ export function init(footprints){
   };
 
   footprints.noop = function(){};
+  footprints.identity = function(a){ return a; };
 
   //utlities methods
   var toArray = function(args) {
@@ -54,6 +53,7 @@ export function init(footprints){
       opts.errorCallback = opts.errorCallback || footprints.noop;
       opts.uniqueIdFunc = opts.uniqueIdFunc || ulid;
       opts.readyCallback = opts.readyCallback || footprints.noop;
+      opts.transformPayloadFunc = opts.transformPayloadFunc || footprints.identity
       opts.pageId = opts.pageId || opts.uniqueIdFunc();
     })(footprints.options);
 
@@ -88,6 +88,7 @@ export function init(footprints){
     errorCallback,
     uniqueIdFunc,
     readyCallback,
+    transformPayloadFunc,
     debug
   ) {
 
@@ -121,6 +122,7 @@ export function init(footprints){
       payload['eventTime'] = new Date().toISOString();
       payload['eventId'] = uniqueIdFunc();
       payload['eventType'] = eventType;
+      payload = transformPayloadFunc(payload);
       enqueueOutput(payload);
     };
 
@@ -260,6 +262,7 @@ export function init(footprints){
     footprints.options.errorCallback,
     footprints.options.uniqueIdFunc,
     footprints.options.readyCallback,
+    footprints.options.transformPayloadFunc,
     footprints.options.debug
   );
 }
