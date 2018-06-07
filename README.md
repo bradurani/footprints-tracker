@@ -115,7 +115,7 @@ The snippet arguments are `window`, `documents`, `scriptUrl`, `options`
   - `pageId`: overrides the automatically generated pageId ulid
   - `pageTime`: override the automatically generated pageTime
   - `successCallback`: used to provide a function that is called every time an
-    event is successfully seng
+    event is successfully sent
   - `errorCallback`: used to provide a function that is called every time an
     event send fails
   - `readyCallback`: used to provide a function that is called when the
