@@ -148,6 +148,11 @@ payload fields. So, for example, if you wanted to convert the
 
 ```
 
+## Compatibility
+
+Footprints is written in JavaScript 5 for compatibility and to keep file sizes
+minimal. The only modern feature it uses is the `fetch` API. If you need to
+target browsers that don't support `fetch`, you should use a polyfill.
 
 ## Development
 
