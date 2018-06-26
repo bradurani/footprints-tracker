@@ -21,6 +21,13 @@ Add the following snippet to your page in the `<head>` element.
 </script>
 ```
 
+## CDN Link
+Footprints is available via Unpkg at the following URL:
+`https://unpkg.com/footprints-tracker@0.9.1/release/footprints.min.js`
+
+Previous versions can be found here:
+`https://unpkg.com/footprints-tracker@<VERSION>/release/footprints.min.js`
+
 ## Tracking Events
 
 To track a user event, call
