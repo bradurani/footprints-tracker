@@ -56,6 +56,7 @@ export function init(footprints){
       opts.transformPayloadFunc = opts.transformPayloadFunc || footprints.identity;
       opts.pageId = opts.pageId || opts.uniqueIdFunc();
       opts.fetchOptions = opts.fetchOptions || {};
+      opts.maxAttempts = opts.maxAttempts || 'unlimited';
     })(footprints.options);
 
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
@@ -91,7 +92,8 @@ export function init(footprints){
     readyCallback,
     transformPayloadFunc,
     debug,
-    fetchOptions
+    fetchOptions,
+    maxAttempts
   ) {
 
     var processQueues = footprints.processQueues = function(){
@@ -125,34 +127,34 @@ export function init(footprints){
       payload['eventId'] = uniqueIdFunc();
       payload['eventType'] = eventType;
       payload = transformPayloadFunc(payload);
-      enqueueOutput(payload);
+      enqueueOutput(payload, 0);
     };
 
     var enqueueInput = function(payload){
       inputQueue.push(payload);
     };
 
-    var enqueueOutput = function(payload) {
-      outputQueue.push(payload);
+    var enqueueOutput = function(payload, attempt) {
+      outputQueue.push({ attempt: attempt, payload: payload });
     };
 
     var processOutputQueue = function() {
       trace("processing output queue");
-      var payload;
-      while (payload = outputQueue.shift()) {
-        send(payload);
+      var msg;
+      while (msg = outputQueue.shift()) {
+        send(msg.payload, msg.attempt);
       }
     };
 
-    var send = function(payload) {
+    var send = function(payload, attempt) {
       trace("sending event", payload);
-      var fetchParams = Object.assign(fetchOptions, {
+      var fetchParams = Object.assign({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
-      });
+      }, fetchOptions);
       fetch(endpointUrl, fetchParams).then(function(response){
         if (response.status >= 200 && response.status < 300) {
           return response;
@@ -163,7 +165,7 @@ export function init(footprints){
         }
       }).then(sendComplete.bind(null, payload))
         .catch(function(e){
-          sendError(payload, e);
+          sendError(payload, attempt, e);
         });
     };
 
@@ -172,10 +174,11 @@ export function init(footprints){
       trace('Event Sent', payload);
     };
 
-    var sendError = function(payload, e) {
-      enqueueOutput(payload);
+    var sendError = function(payload, attempt, e) {
+      if(maxAttempts == 'unlimited' || attempt + 1 < maxAttempts)
+        enqueueOutput(payload, attempt + 1);
       errorCallback(e);
-      error('Event Failed', e, payload);
+      error('Event Failed', e, payload, { attempt: attempt });
     };
 
     var actions = {
@@ -267,7 +270,8 @@ export function init(footprints){
     footprints.options.readyCallback,
     footprints.options.transformPayloadFunc,
     footprints.options.debug,
-    footprints.options.fetchOptions
+    footprints.options.fetchOptions,
+    footprints.options.maxAttempts
   );
 }
 

@@ -134,6 +134,8 @@ The snippet arguments are `window`, `documents`, `scriptUrl`, `options`
     want to use something other than ulids
   - `fetchOptions`: options passed to fetch (default: `{ method: 'POST', headers:
     { 'Content-Type': 'application/json' }}`)
+  - `maxAttempts`: max number of times to attempt to deliver an event (default:
+    'unlimited')
 
 ## Transforming the event payload
 
