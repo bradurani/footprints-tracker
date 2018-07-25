@@ -224,7 +224,7 @@ describe("Footprints", function(){
         footprints.push('pageView');
       });
 
-      it.only('does not re-enqueue if max attempts reached', function(done){
+      it('does not re-enqueue if max attempts reached', function(done){
         fetchMock.postOnce('http://my.domain/analytics', 403);
         options.successCallback = function(response){
           done(new Error());
