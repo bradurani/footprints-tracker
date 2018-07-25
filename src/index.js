@@ -55,7 +55,7 @@ export function init(footprints){
       opts.readyCallback = opts.readyCallback || footprints.noop;
       opts.transformPayloadFunc = opts.transformPayloadFunc || footprints.identity;
       opts.pageId = opts.pageId || opts.uniqueIdFunc();
-      opts.fetchOptions = {};
+      opts.fetchOptions = opts.fetchOptions || {};
     })(footprints.options);
 
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
