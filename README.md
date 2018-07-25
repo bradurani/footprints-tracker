@@ -132,6 +132,8 @@ The snippet arguments are `window`, `documents`, `scriptUrl`, `options`
     endpoint (see below)
   - `uniqueIdFunc`: used to provide a function that creates a uniqueId, if you
     want to use something other than ulids
+  - `fetchOptions`: options passed to fetch (default: `{ method: 'POST', headers:
+    { 'Content-Type': 'application/json' }}`)
 
 ## Transforming the event payload
 

@@ -53,8 +53,9 @@ export function init(footprints){
       opts.errorCallback = opts.errorCallback || footprints.noop;
       opts.uniqueIdFunc = opts.uniqueIdFunc || ulid;
       opts.readyCallback = opts.readyCallback || footprints.noop;
-      opts.transformPayloadFunc = opts.transformPayloadFunc || footprints.identity
+      opts.transformPayloadFunc = opts.transformPayloadFunc || footprints.identity;
       opts.pageId = opts.pageId || opts.uniqueIdFunc();
+      opts.fetchOptions = {};
     })(footprints.options);
 
     footprints.state.basePayload.pageTime = footprints.options.pageTime;
@@ -89,7 +90,8 @@ export function init(footprints){
     uniqueIdFunc,
     readyCallback,
     transformPayloadFunc,
-    debug
+    debug,
+    fetchOptions
   ) {
 
     var processQueues = footprints.processQueues = function(){
@@ -144,13 +146,14 @@ export function init(footprints){
 
     var send = function(payload) {
       trace("sending event", payload);
-      fetch(endpointUrl, {
+      var fetchParams = Object.assign(fetchOptions, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
-      }).then(function(response){
+      });
+      fetch(endpointUrl, fetchParams).then(function(response){
         if (response.status >= 200 && response.status < 300) {
           return response;
         } else {
@@ -263,7 +266,8 @@ export function init(footprints){
     footprints.options.uniqueIdFunc,
     footprints.options.readyCallback,
     footprints.options.transformPayloadFunc,
-    footprints.options.debug
+    footprints.options.debug,
+    footprints.options.fetchOptions
   );
 }
 

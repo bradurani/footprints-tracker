@@ -76,6 +76,7 @@ describe("Footprints", function(){
       });
       expect(options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
+        fetchOptions: {},
         intervalWait: 5000,
         pageTime: '2014-02-28T00:00:00.000Z',
         pageId: '111',
@@ -109,6 +110,7 @@ describe("Footprints", function(){
       init(footprints);
       expect(options).to.eql({
         endpointUrl: 'http://my.domain/analytics',
+        fetchOptions: {},
         intervalWait: 2000,
         pageId: '222',
         pageTime: '2018-04-06T00:00:00.000Z',
@@ -620,6 +622,31 @@ describe("Footprints", function(){
           options.transformPayloadFunc = function(defaultPayload){
             defaultPayload['eventTime'] = Date.parse(defaultPayload['eventTime']);
             return defaultPayload;
+          };
+          init(footprints);
+          footprints.push('track', 'Contact Created');
+        });
+      });
+
+      describe('fetch options', function(){
+        it('use fetch options', function(done){
+          fetchMock.post(matchRequest('http://my.domain/analytics', {
+            pageTime: '2014-02-28T00:00:00.000Z',
+            pageId: 'abc123',
+            eventName: 'Contact Created',
+            eventTime: '2014-02-28T00:00:00.000Z',
+            eventId: 'abc123',
+            eventType: 'track'
+          }), 200, { name: 'created' });
+          options.successCallback = function(response){
+            expect(response.status).to.eql(200);
+            done();
+          };
+          options.errorCallback = function(error){
+            done(error);
+          };
+          options.fetchOptions = {
+            credentials: 'include'
           };
           init(footprints);
           footprints.push('track', 'Contact Created');
